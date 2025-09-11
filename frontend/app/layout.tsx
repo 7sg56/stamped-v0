@@ -31,7 +31,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Stamped - Event Management & Attendance System",
   description: "Complete event management system with QR code attendance tracking, registration, and real-time analytics",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

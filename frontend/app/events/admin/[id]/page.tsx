@@ -13,8 +13,7 @@ import {
   Play, 
   UserCheck,
   UserX,
-  Download,
-  Edit
+  Download
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

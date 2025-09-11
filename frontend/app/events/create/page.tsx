@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, MapPin, Users, Save } from 'lucide-react';
+import { ArrowLeft, Calendar, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface EventData {

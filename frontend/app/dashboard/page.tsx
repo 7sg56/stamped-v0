@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Calendar, 
   Users, 
-  BarChart3, 
   Plus, 
   Eye, 
   Download, 
@@ -41,17 +40,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   // Remove aggregated stats - we'll show per-event stats instead
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    if (adminUser) {
-      fetchEvents();
-    }
-  }, [adminUser]);
-
-  const checkAuth = () => {
+  const checkAuth = useCallback(() => {
     const token = localStorage.getItem('adminToken');
     const user = localStorage.getItem('adminUser');
 
@@ -66,7 +55,17 @@ export default function AdminDashboard() {
       console.error('Error parsing admin user:', error);
       router.push('/login');
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  useEffect(() => {
+    if (adminUser) {
+      fetchEvents();
+    }
+  }, [adminUser]);
 
   const fetchEvents = async () => {
     try {
