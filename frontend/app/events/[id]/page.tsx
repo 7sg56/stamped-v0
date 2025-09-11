@@ -1,0 +1,311 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Mail } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+interface Event {
+  _id: string;
+  title: string;
+  description: string;
+  date: string;
+  venue: string;
+  maxParticipants?: number;
+  participantCount: number;
+}
+
+interface RegistrationData {
+  name: string;
+  email: string;
+}
+
+export default function EventDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const eventId = params.id as string;
+
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registrationData, setRegistrationData] = useState<RegistrationData>({
+    name: '',
+    email: ''
+  });
+
+  const fetchEvent = useCallback(async () => {
+    try {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setEvent(data.event);
+      } else {
+        toast.error('Event not found');
+        router.push('/events');
+      }
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      toast.error('Failed to fetch event details');
+      router.push('/events');
+    } finally {
+      setLoading(false);
+    }
+  }, [eventId, router]);
+
+  useEffect(() => {
+    if (eventId) {
+      fetchEvent();
+    }
+  }, [eventId, fetchEvent]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/registrations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...registrationData,
+          eventId: eventId
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setRegistrationSuccess(true);
+        toast.success('Registration successful! Check your email for the QR code.');
+      } else {
+        toast.error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('Registration failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isEventFull = () => {
+    return !!(event?.maxParticipants && event.participantCount >= event.maxParticipants);
+  };
+
+  const isEventPast = () => {
+    return !!(event && new Date(event.date) < new Date());
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Event Not Found</h2>
+          <Link href="/events" className="text-primary hover:text-primary/80">
+            Back to Events
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <header className="border-b bg-card/50 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center py-6">
+              <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back to Events
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-card rounded-lg shadow-md p-8 text-center border">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
+            <h1 className="text-2xl font-bold text-foreground mb-4">Registration Successful!</h1>
+            <p className="text-muted-foreground mb-6">
+              Thank you for registering for <strong>{event.title}</strong>. 
+              Your registration has been confirmed and a QR code has been sent to your email.
+            </p>
+            
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-center mb-2">
+                <Mail className="h-5 w-5 text-primary mr-2" />
+                <span className="text-primary font-medium">Check Your Email</span>
+              </div>
+              <p className="text-primary text-sm">
+                We&apos;ve sent your QR code to <strong>{registrationData.email}</strong>. 
+                Please check your inbox and spam folder.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <Link
+                href="/events"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
+              >
+                Browse More Events
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <header className="border-b bg-card/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center py-6">
+            <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Events
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Event Details */}
+          <div className="bg-card rounded-lg shadow-md p-6 border">
+            <h1 className="text-2xl font-bold text-foreground mb-4">{event.title}</h1>
+            <p className="text-muted-foreground mb-6">{event.description}</p>
+
+            <div className="space-y-4">
+              <div className="flex items-center text-muted-foreground">
+                <Calendar className="h-5 w-5 mr-3" />
+                <span>{formatDate(event.date)}</span>
+              </div>
+              
+              <div className="flex items-center text-muted-foreground">
+                <MapPin className="h-5 w-5 mr-3" />
+                <span>{event.venue}</span>
+              </div>
+              
+              <div className="flex items-center text-muted-foreground">
+                <Users className="h-5 w-5 mr-3" />
+                <span>
+                  {event.participantCount} registered
+                  {event.maxParticipants && ` / ${event.maxParticipants} max`}
+                </span>
+              </div>
+            </div>
+
+            {isEventFull() && (
+              <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-destructive text-sm">
+                  <strong>Event Full:</strong> This event has reached its maximum capacity.
+                </p>
+              </div>
+            )}
+
+            {isEventPast() && (
+              <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <p className="text-yellow-500 text-sm">
+                  <strong>Event Ended:</strong> This event has already taken place.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Registration Form */}
+          <div className="bg-card rounded-lg shadow-md p-6 border">
+            <h2 className="text-xl font-semibold text-foreground mb-6">Register for Event</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  value={registrationData.name}
+                  onChange={(e) => setRegistrationData({ ...registrationData, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground"
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  value={registrationData.email}
+                  onChange={(e) => setRegistrationData({ ...registrationData, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground"
+                  placeholder="Enter your email address"
+                />
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Your QR code will be sent to this email address
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting || isEventFull() || isEventPast()}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground transition-colors ${
+                  submitting || isEventFull() || isEventPast()
+                    ? 'bg-muted cursor-not-allowed'
+                    : 'bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
+                }`}
+              >
+                {submitting ? 'Registering...' : 'Register for Event'}
+              </button>
+            </form>
+
+            <div className="mt-6 p-4 bg-muted/50 border border-border rounded-lg">
+              <h3 className="text-sm font-medium text-foreground mb-2">What happens next?</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• You&apos;ll receive a confirmation email with your QR code</li>
+                <li>• Bring the QR code to the event for easy check-in</li>
+                <li>• Your attendance will be automatically tracked</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

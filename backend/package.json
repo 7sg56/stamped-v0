@@ -1,0 +1,29 @@
+{
+  "name": "stamped-backend",
+  "version": "2.0.0",
+  "description": "Backend server for Stamped Event Management & Attendance System",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node scripts/seed.js",
+    "seed:admin": "node scripts/seed.js admin"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.0-rc.4",
+    "nodemailer": "^6.9.7",
+    "qrcode": "^1.5.4",
+    "uuid": "^9.0.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
