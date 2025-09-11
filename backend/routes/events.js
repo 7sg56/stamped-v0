@@ -35,27 +35,35 @@ router.get('/', async (req, res) => {
     }
 
     if (isAdminUser) {
-      // Admin view: return all events with participant counts and stats
-      const events = await Event.find()
+      // Admin view: return only events created by this admin with participant counts and stats
+      const events = await Event.find({ organizer: req.user.id })
         .populate('participants', 'attended')
+        .populate('organizer', 'username')
         .sort({ date: 1 })
         .lean();
 
       // Add virtual fields for each event
-      const eventsWithStats = events.map(event => ({
-        ...event,
-        participantCount: event.participants ? event.participants.length : 0,
-        attendedCount: event.participants ? event.participants.filter(p => p.attended).length : 0
-      }));
+      const eventsWithStats = events.map(event => {
+        // Ensure organizer has a fallback
+        const organizer = event.organizer || { username: 'Unknown Organizer' };
+        
+        return {
+          ...event,
+          participantCount: event.participants ? event.participants.length : 0,
+          attendedCount: event.participants ? event.participants.filter(p => p.attended).length : 0,
+          organizer
+        };
+      });
 
       res.json({
         success: true,
         events: eventsWithStats
       });
     } else {
-      // Public view: return only active events with participant counts but without participant details
+      // Public view: return only active events with participant counts and organizer info
       const events = await Event.find({ isActive: true })
         .populate('participants', 'attended')
+        .populate('organizer', 'username')
         .sort({ date: 1 })
         .lean();
 
@@ -67,10 +75,14 @@ router.get('/', async (req, res) => {
         // Remove participants array to keep it secure
         delete event.participants;
         
+        // Ensure organizer has a fallback
+        const organizer = event.organizer || { username: 'Unknown Organizer' };
+        
         return {
           ...event,
           participantCount,
-          attendedCount
+          attendedCount,
+          organizer
         };
       });
 
@@ -105,6 +117,7 @@ router.get('/:id', async (req, res) => {
 
     const event = await Event.findById(req.params.id)
       .populate('participants', 'attended')
+      .populate('organizer', 'username')
       .lean();
 
     if (!event) {
@@ -117,6 +130,9 @@ router.get('/:id', async (req, res) => {
     // Add virtual fields for participant counts
     event.participantCount = event.participants ? event.participants.length : 0;
     event.attendedCount = event.participants ? event.participants.filter(p => p.attended).length : 0;
+
+    // Ensure organizer has a fallback
+    event.organizer = event.organizer || { username: 'Unknown Organizer' };
 
     // Remove participant details for public access, keep only counts
     delete event.participants;
@@ -174,7 +190,8 @@ router.post('/', auth, isAdmin, async (req, res) => {
       description,
       date: eventDate,
       venue,
-      maxParticipants: maxParticipants || null
+      maxParticipants: maxParticipants || null,
+      organizer: req.user.id
     });
 
     await event.save();
@@ -226,6 +243,14 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Event not found'
+      });
+    }
+
+    // Check if the event belongs to the current admin
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You can only update your own events.'
       });
     }
 
@@ -301,6 +326,14 @@ router.delete('/:id', auth, isAdmin, async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Event not found'
+      });
+    }
+
+    // Check if the event belongs to the current admin
+    if (event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You can only delete your own events.'
       });
     }
 

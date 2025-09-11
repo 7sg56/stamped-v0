@@ -10,9 +10,9 @@ const router = express.Router();
 /**
  * @route   POST /api/attendance/mark
  * @desc    Mark attendance from QR code scan
- * @access  Public
+ * @access  Private (Admin)
  */
-router.post('/mark', async (req, res) => {
+router.post('/mark', auth, isAdmin, async (req, res) => {
   try {
     const { qrData } = req.body;
 

@@ -83,6 +83,11 @@ const eventSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  organizer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin',
+    required: [true, 'Event organizer is required']
+  },
   participants: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Participant'

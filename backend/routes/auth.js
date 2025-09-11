@@ -65,6 +65,79 @@ router.post('/login', async (req, res) => {
 });
 
 /**
+ * @route   POST /api/auth/register
+ * @desc    Admin registration
+ * @access  Public
+ */
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password, confirmPassword } = req.body;
+
+    // Validate input
+    if (!username || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username, password, and confirm password are required'
+      });
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match'
+      });
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      return res.status(409).json({
+        success: false,
+        message: 'Username already exists'
+      });
+    }
+
+    // Create new admin
+    const admin = new Admin({
+      username: username.trim(),
+      passwordHash: password // Will be hashed by the pre-save middleware
+    });
+
+    await admin.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful. Please login to continue.'
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: messages.join(', ')
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+/**
  * @route   GET /api/auth/verify
  * @desc    Verify JWT token
  * @access  Private (Admin)

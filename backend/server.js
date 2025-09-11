@@ -3,7 +3,6 @@ const express = require("express");
 const connectDB = require("./config/db");
 const setupMiddleware = require("./config/middleware");
 const apiRoutes = require("./routes");
-const { runSeeds } = require("./seed/adminSeeder");
 const errorHandler = require("./middleware/errorHandler");
 const { errorLogger } = require("./middleware/requestLogger");
 
@@ -13,11 +12,6 @@ const PORT = process.env.PORT || 5001;
 // Connect to database
 connectDB();
 
-// Run database seeds (non-blocking)
-runSeeds().catch((error) => {
-  console.warn("Seeding failed during startup:", error.message);
-  console.log("Server will continue to start normally");
-});
 
 // Setup middleware
 setupMiddleware(app);

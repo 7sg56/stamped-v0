@@ -16,8 +16,7 @@ const requiredFiles = [
   'config/db.js',
   'config/middleware.js',
   'models/index.js',
-  'routes/index.js',
-  'seed/adminSeeder.js'
+  'routes/index.js'
 ];
 
 // Check .env file in root directory
@@ -76,9 +75,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 const requiredEnvVars = [
   'MONGODB_URI',
   'JWT_SECRET',
-  'PORT',
-  'ADMIN_USERNAME',
-  'ADMIN_PASSWORD'
+  'PORT'
 ];
 
 let allEnvVarsSet = true;
