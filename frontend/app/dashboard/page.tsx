@@ -12,7 +12,8 @@ import {
   Download, 
   LogOut,
   TrendingUp,
-  Clock
+  Clock,
+  QrCode
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -244,6 +245,13 @@ export default function AdminDashboard() {
             >
               <Plus className="h-4 w-4 mr-2" />
               Create New Event
+            </Link>
+            <Link
+              href="/scanner"
+              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-foreground bg-card hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
+            >
+              <QrCode className="h-4 w-4 mr-2" />
+              QR Scanner
             </Link>
           </div>
         </div>

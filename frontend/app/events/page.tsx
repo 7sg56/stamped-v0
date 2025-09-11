@@ -15,6 +15,10 @@ interface Event {
   maxParticipants?: number;
   participantCount: number;
   isActive: boolean;
+  organizer?: {
+    _id: string;
+    username: string;
+  };
 }
 
 export default function EventsPage() {

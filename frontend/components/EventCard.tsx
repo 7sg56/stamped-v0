@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Calendar, MapPin, Users } from 'lucide-react';
+import { Calendar, MapPin, Users, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,10 @@ interface Event {
   maxParticipants?: number;
   participantCount: number;
   isActive: boolean;
+  organizer?: {
+    _id: string;
+    username: string;
+  };
 }
 
 interface EventCardProps {
@@ -85,6 +89,13 @@ export default function EventCard({ event }: EventCardProps) {
             <span className="text-sm">
               {event.participantCount}
               {event.maxParticipants ? ` / ${event.maxParticipants}` : ''} participants
+            </span>
+          </div>
+          
+          <div className="flex items-center text-muted-foreground">
+            <User className="h-4 w-4 mr-2" />
+            <span className="text-sm">
+              Organized by {event.organizer?.username || 'Unknown Organizer'}
             </span>
           </div>
         </div>

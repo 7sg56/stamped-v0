@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, QrCode, CheckCircle, XCircle, Camera, CameraOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, QrCode, CheckCircle, XCircle, Camera, CameraOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import QrScanner from 'qr-scanner';
 
@@ -30,6 +31,7 @@ interface AttendanceResult {
 }
 
 export default function ScannerPage() {
+  const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null); 
   const qrScannerRef = useRef<QrScanner | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -40,12 +42,30 @@ export default function ScannerPage() {
   const [qrCodePreview, setQrCodePreview] = useState<string | null>(null);
   const [scanCount, setScanCount] = useState(0);
   const [successCount, setSuccessCount] = useState(0);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Check authentication
+    const checkAuth = () => {
+      const token = localStorage.getItem('adminToken');
+      const adminUser = localStorage.getItem('adminUser');
+      
+      if (!token || !adminUser) {
+        setIsAuthenticated(false);
+        toast.error('Access denied. Admin authentication required.');
+        router.push('/login');
+        return;
+      }
+      
+      setIsAuthenticated(true);
+    };
+
+    checkAuth();
+    
     return () => {
       stopScanning();
     };
-  }, []);
+  }, [router]);
 
   const startScanning = async () => {
     try {
@@ -93,10 +113,12 @@ export default function ScannerPage() {
     stopScanning();
 
     try {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/attendance/mark`, {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/attendance/mark`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           qrData: qrData
@@ -162,16 +184,48 @@ export default function ScannerPage() {
     });
   };
 
+  // Show loading state while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying admin access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not authenticated
+  if (isAuthenticated === false) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <Shield className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
+          <p className="text-muted-foreground mb-4">Admin authentication required to access the scanner.</p>
+          <Link href="/login" className="text-primary hover:underline">
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-6">
-            <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+          <div className="flex items-center justify-between py-6">
+            <Link href="/dashboard" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Home
+              Back to Dashboard
             </Link>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Shield className="h-4 w-4 mr-2" />
+              Admin Scanner
+            </div>
           </div>
         </div>
       </header>
