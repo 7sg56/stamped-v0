@@ -1,11 +1,16 @@
 
+# Stamped - Event Management & Attendance System
+
+A modern, full-stack event management system with QR code-based attendance tracking. Features a sleek dark-themed frontend built with Next.js 15 and a robust backend API with Node.js, Express, and MongoDB.
+
+
 <p align="center">
    <img src="frontend/public/website.png" alt="Website Preview" width="700" />
 </p>
 
-# Stamped - Event Management & Attendance System
-
-A modern, full-stack event management system with QR code-based attendance tracking. Features a sleek dark-themed frontend built with Next.js 15 and a robust backend API with Node.js, Express, and MongoDB. This project demonstrates full-stack development skills including modern React patterns, API design, database modeling, authentication, and real-time attendance tracking.
+<p align="center">
+   <img src="frontend/public/admin-dashboard.png" alt="Admin Dashboard Preview" width="700" />
+</p>
 
 ## Features
 
@@ -22,8 +27,6 @@ A modern, full-stack event management system with QR code-based attendance track
 - **Responsive Design**: Mobile-first design that works on all devices
 - **Real-time Scanner**: Advanced QR code scanner with live camera feed
 - **Enhanced Scanner Display**: Shows participant info, event details, and attendance statistics
-- **Session Tracking**: Real-time statistics for scanning sessions
-- **Interactive UI**: Smooth animations and hover effects
 - **Accessibility**: Proper ARIA labels and keyboard navigation
 
 ## Tech Stack
@@ -34,18 +37,13 @@ A modern, full-stack event management system with QR code-based attendance track
 - **JWT** - Authentication and authorization
 - **QRCode** - QR code generation
 - **Nodemailer** - Email service integration
-- **Jest** - Testing framework
-- **Winston** - Logging
 
 ### Frontend
 - **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
 - **Tailwind CSS v4** - Utility-first styling with dark theme
 - **shadcn/ui** - Modern component library
 - **Aceternity UI** - Advanced UI components and animations
-- **Framer Motion** - Smooth animations and transitions
 - **QR Scanner** - Real-time QR code scanning
-- **React Hot Toast** - Toast notifications
 
 ## Project Structure
 
@@ -242,18 +240,6 @@ The scanner page (`/scanner`) includes advanced functionality for real-time atte
 
 ### Testing Status
 ⚠️ **Currently in Testing Mode**: The QR scanner is actively being tested and refined. Features may be updated based on testing feedback.
-
-
-## Key Features Demonstrated
-
-- **RESTful API Design**: Clean, consistent API endpoints
-- **Database Modeling**: Proper schema design with validation
-- **Authentication**: JWT-based auth with middleware
-- **Error Handling**: Centralized error handling and logging
-- **Input Validation**: Server-side validation for all inputs
-- **Testing**: Comprehensive test coverage
-- **Email Integration**: Automated email notifications
-- **File Generation**: QR code and Excel export functionality
 
 ---
 
