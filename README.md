@@ -1,3 +1,8 @@
+
+<p align="center">
+   <img src="frontend/public/website.png" alt="Website Preview" width="700" />
+</p>
+
 # Stamped - Event Management & Attendance System
 
 A modern, full-stack event management system with QR code-based attendance tracking. Features a sleek dark-themed frontend built with Next.js 15 and a robust backend API with Node.js, Express, and MongoDB. This project demonstrates full-stack development skills including modern React patterns, API design, database modeling, authentication, and real-time attendance tracking.
