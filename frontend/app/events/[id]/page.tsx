@@ -141,31 +141,32 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <header className="border-b bg-card/50 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center py-6">
-              <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                Back to Events
+          <div className="container">
+            <div className="flex items-center py-4 sm:py-6">
+              <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                <span className="hidden sm:inline">Back to Events</span>
+                <span className="sm:hidden">Back</span>
               </Link>
             </div>
           </div>
         </header>
 
-        <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-card rounded-lg shadow-md p-8 text-center border">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
-            <h1 className="text-2xl font-bold text-foreground mb-4">Registration Successful!</h1>
-            <p className="text-muted-foreground mb-6">
+        <main className="container py-8 sm:py-12">
+          <div className="bg-card rounded-lg shadow-md p-4 sm:p-8 text-center border">
+            <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Registration Successful!</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-4">
               Thank you for registering for <strong>{event.title}</strong>. 
               Your registration has been confirmed and a QR code has been sent to your email.
             </p>
             
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
               <div className="flex items-center justify-center mb-2">
-                <Mail className="h-5 w-5 text-primary mr-2" />
-                <span className="text-primary font-medium">Check Your Email</span>
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2" />
+                <span className="text-primary font-medium text-sm sm:text-base">Check Your Email</span>
               </div>
-              <p className="text-primary text-sm">
+              <p className="text-primary text-xs sm:text-sm px-2">
                 We&apos;ve sent your QR code to <strong>{registrationData.email}</strong>. 
                 Please check your inbox and spam folder.
               </p>
@@ -174,7 +175,7 @@ export default function EventDetailPage() {
             <div className="space-y-4">
               <Link
                 href="/events"
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
+                className="w-full inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
               >
                 Browse More Events
               </Link>
@@ -188,37 +189,38 @@ export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-6">
-            <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Events
+        <div className="container">
+          <div className="flex items-center py-4 sm:py-6">
+            <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+              <span className="hidden sm:inline">Back to Events</span>
+              <span className="sm:hidden">Back</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="container py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Event Details */}
-          <div className="bg-card rounded-lg shadow-md p-6 border">
-            <h1 className="text-2xl font-bold text-foreground mb-4">{event.title}</h1>
-            <p className="text-muted-foreground mb-6">{event.description}</p>
+          <div className="bg-card rounded-lg shadow-md p-4 sm:p-6 border">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">{event.title}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">{event.description}</p>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center text-muted-foreground">
-                <Calendar className="h-5 w-5 mr-3" />
-                <span>{formatDate(event.date)}</span>
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-3" />
+                <span className="text-sm sm:text-base">{formatDate(event.date)}</span>
               </div>
               
               <div className="flex items-center text-muted-foreground">
-                <MapPin className="h-5 w-5 mr-3" />
-                <span>{event.venue}</span>
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-3" />
+                <span className="text-sm sm:text-base">{event.venue}</span>
               </div>
               
               <div className="flex items-center text-muted-foreground">
-                <Users className="h-5 w-5 mr-3" />
-                <span>
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-3" />
+                <span className="text-sm sm:text-base">
                   {event.participantCount} registered
                   {event.maxParticipants && ` / ${event.maxParticipants} max`}
                 </span>
@@ -226,16 +228,16 @@ export default function EventDetailPage() {
             </div>
 
             {isEventFull() && (
-              <div className="mt-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                <p className="text-destructive text-sm">
+              <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-destructive text-xs sm:text-sm">
                   <strong>Event Full:</strong> This event has reached its maximum capacity.
                 </p>
               </div>
             )}
 
             {isEventPast() && (
-              <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <p className="text-yellow-500 text-sm">
+              <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <p className="text-yellow-500 text-xs sm:text-sm">
                   <strong>Event Ended:</strong> This event has already taken place.
                 </p>
               </div>
@@ -243,10 +245,10 @@ export default function EventDetailPage() {
           </div>
 
           {/* Registration Form */}
-          <div className="bg-card rounded-lg shadow-md p-6 border">
-            <h2 className="text-xl font-semibold text-foreground mb-6">Register for Event</h2>
+          <div className="bg-card rounded-lg shadow-md p-4 sm:p-6 border">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4 sm:mb-6">Register for Event</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                   Full Name *
@@ -258,7 +260,7 @@ export default function EventDetailPage() {
                   required
                   value={registrationData.name}
                   onChange={(e) => setRegistrationData({ ...registrationData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground"
+                  className="w-full px-3 py-3 sm:py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground text-base sm:text-sm"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -274,10 +276,10 @@ export default function EventDetailPage() {
                   required
                   value={registrationData.email}
                   onChange={(e) => setRegistrationData({ ...registrationData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground"
+                  className="w-full px-3 py-3 sm:py-2 border border-input bg-background rounded-md shadow-sm focus:outline-none focus:ring-ring focus:border-ring text-foreground text-base sm:text-sm"
                   placeholder="Enter your email address"
                 />
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
                   Your QR code will be sent to this email address
                 </p>
               </div>
@@ -285,7 +287,7 @@ export default function EventDetailPage() {
               <button
                 type="submit"
                 disabled={submitting || isEventFull() || isEventPast()}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground transition-colors ${
+                className={`w-full flex justify-center py-3 sm:py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground transition-colors ${
                   submitting || isEventFull() || isEventPast()
                     ? 'bg-muted cursor-not-allowed'
                     : 'bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
@@ -295,9 +297,9 @@ export default function EventDetailPage() {
               </button>
             </form>
 
-            <div className="mt-6 p-4 bg-muted/50 border border-border rounded-lg">
+            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-muted/50 border border-border rounded-lg">
               <h3 className="text-sm font-medium text-foreground mb-2">What happens next?</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
                 <li>• You&apos;ll receive a confirmation email with your QR code</li>
                 <li>• Bring the QR code to the event for easy check-in</li>
                 <li>• Your attendance will be automatically tracked</li>

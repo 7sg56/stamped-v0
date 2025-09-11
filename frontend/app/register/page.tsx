@@ -70,36 +70,36 @@ export default function AdminRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="flex items-center">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg mr-3">
-              <UserPlus className="h-6 w-6 text-primary-foreground" />
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg mr-3">
+              <UserPlus className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Create Account</h1>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
+        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-foreground">
           Join the system
         </h2>
-        <p className="mt-2 text-center text-sm text-muted-foreground">
+        <p className="mt-2 text-center text-sm text-muted-foreground px-4">
           Create your admin account to get started
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle>Create Admin Account</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Create Admin Account</CardTitle>
+            <CardDescription className="text-sm">
               Fill in the details below to create your admin account
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-sm">Username</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -109,7 +109,7 @@ export default function AdminRegisterPage() {
                     required
                     value={registerData.username}
                     onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-                    className="pl-10"
+                    className="pl-10 h-10 sm:h-9"
                     placeholder="Choose a username"
                   />
                 </div>
@@ -119,7 +119,7 @@ export default function AdminRegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-sm">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -129,13 +129,13 @@ export default function AdminRegisterPage() {
                     required
                     value={registerData.password}
                     onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 h-10 sm:h-9"
                     placeholder="Create a password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground p-1"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -150,7 +150,7 @@ export default function AdminRegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-sm">Confirm Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -160,13 +160,13 @@ export default function AdminRegisterPage() {
                     required
                     value={registerData.confirmPassword}
                     onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 h-10 sm:h-9"
                     placeholder="Confirm your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground p-1"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -180,15 +180,15 @@ export default function AdminRegisterPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full"
+                className="w-full h-10 sm:h-9"
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
 
-            <div className="mt-6 space-y-4">
+            <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Already have an account?{' '}
                   <Link href="/login" className="text-primary hover:underline">
                     Sign in here
@@ -197,7 +197,7 @@ export default function AdminRegisterPage() {
               </div>
               
               <div className="text-center">
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild className="h-10 sm:h-9">
                   <Link href="/">
                     <ArrowLeft className="h-4 w-4 mr-1" />
                     Back to Home

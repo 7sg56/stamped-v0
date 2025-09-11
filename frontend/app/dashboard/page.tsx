@@ -156,64 +156,64 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+        <div className="container">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 gap-4">
             <div className="flex items-center">
-              <Calendar className="h-8 w-8 text-primary mr-3" />
-              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-primary mr-3" />
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">Admin Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center justify-between sm:space-x-4">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 Welcome, <strong className="text-foreground">{adminUser?.username}</strong>
               </span>
               <button
                 onClick={handleLogout}
-                className="flex items-center text-muted-foreground hover:text-destructive transition-colors"
+                className="flex items-center text-muted-foreground hover:text-destructive transition-colors text-sm"
               >
                 <LogOut className="h-4 w-4 mr-1" />
-                Logout
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container py-6 sm:py-8">
         {/* Event Statistics Overview */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-foreground mb-4">Event Statistics Overview</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Event Statistics Overview</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {events.map((event) => {
               const attendanceRate = event.participantCount > 0 
                 ? Math.round((event.attendedCount / event.participantCount) * 100 * 100) / 100 
                 : 0;
               
               return (
-                <div key={event._id} className="bg-card rounded-lg border p-4">
-                  <h3 className="text-lg font-medium text-foreground mb-3 truncate">{event.title}</h3>
+                <div key={event._id} className="bg-card rounded-lg border p-3 sm:p-4">
+                  <h3 className="text-base sm:text-lg font-medium text-foreground mb-3 truncate">{event.title}</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Registrations:</span>
-                      <span className="text-sm font-medium text-foreground">{event.participantCount}</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Registrations:</span>
+                      <span className="text-xs sm:text-sm font-medium text-foreground">{event.participantCount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Attended:</span>
-                      <span className="text-sm font-medium text-foreground">{event.attendedCount}</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Attended:</span>
+                      <span className="text-xs sm:text-sm font-medium text-foreground">{event.attendedCount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Attendance Rate:</span>
-                      <span className="text-sm font-medium text-foreground">{attendanceRate}%</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Attendance Rate:</span>
+                      <span className="text-xs sm:text-sm font-medium text-foreground">{attendanceRate}%</span>
                     </div>
                     {event.maxParticipants && (
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Capacity:</span>
-                        <span className="text-sm font-medium text-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground">Capacity:</span>
+                        <span className="text-xs sm:text-sm font-medium text-foreground">
                           {event.participantCount}/{event.maxParticipants}
                         </span>
                       </div>
                     )}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Status:</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Status:</span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                         event.isActive 
                           ? 'bg-chart-2/10 text-chart-2' 
@@ -229,26 +229,26 @@ export default function AdminDashboard() {
           </div>
           
           {events.length === 0 && (
-            <div className="text-center py-8">
-              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No events created yet</p>
+            <div className="text-center py-6 sm:py-8">
+              <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-sm sm:text-base text-muted-foreground">No events created yet</p>
             </div>
           )}
         </div>
 
         {/* Actions */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Link
               href="/events/create"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
+              className="inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create New Event
             </Link>
             <Link
               href="/scanner"
-              className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-foreground bg-card hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
+              className="inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-border text-sm font-medium rounded-md shadow-sm text-foreground bg-card hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
             >
               <QrCode className="h-4 w-4 mr-2" />
               QR Scanner

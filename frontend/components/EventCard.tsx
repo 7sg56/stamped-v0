@@ -43,16 +43,16 @@ export default function EventCard({ event }: EventCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div className="flex-1">
-            <CardTitle className="text-xl text-card-foreground mb-2">
+            <CardTitle className="text-lg sm:text-xl text-card-foreground mb-2">
               {event.title}
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-muted-foreground text-sm">
               {event.description}
             </CardDescription>
           </div>
-          <div className="ml-4">
+          <div className="flex flex-wrap gap-2 sm:ml-4 sm:flex-col">
             {!event.isActive && (
               <span className="px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full">
                 Inactive
@@ -100,7 +100,7 @@ export default function EventCard({ event }: EventCardProps) {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button asChild className="flex-1">
             <Link href={`/events/${event._id}`}>
               View Details
@@ -108,7 +108,7 @@ export default function EventCard({ event }: EventCardProps) {
           </Button>
           
           {event.isActive && !isEventPast && !isEventFull && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="flex-1 sm:flex-none">
               <Link href={`/events/${event._id}`}>
                 Register
               </Link>

@@ -216,58 +216,60 @@ export default function ScannerPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <Link href="/dashboard" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Dashboard
+        <div className="container">
+          <div className="flex items-center justify-between py-4 sm:py-6">
+            <Link href="/dashboard" className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </Link>
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
               <Shield className="h-4 w-4 mr-2" />
-              Admin Scanner
+              <span className="hidden sm:inline">Admin Scanner</span>
+              <span className="sm:hidden">Scanner</span>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <QrCode className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-foreground mb-2">QR Code Scanner</h1>
-          <p className="text-muted-foreground">
+      <main className="container py-6 sm:py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <QrCode className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">QR Code Scanner</h1>
+          <p className="text-sm sm:text-base text-muted-foreground px-4">
             Scan QR codes to mark attendance at events
           </p>
           
           {/* Testing Notice */}
-          <div className="mt-4 inline-flex items-center px-4 py-2 bg-chart-1/10 border border-chart-1/20 rounded-lg">
+          <div className="mt-4 inline-flex items-center px-3 sm:px-4 py-2 bg-chart-1/10 border border-chart-1/20 rounded-lg">
             <div className="w-2 h-2 bg-chart-1 rounded-full mr-2 animate-pulse"></div>
-            <span className="text-sm text-chart-1 font-medium">Scanner in Testing Mode</span>
+            <span className="text-xs sm:text-sm text-chart-1 font-medium">Scanner in Testing Mode</span>
           </div>
         </div>
 
         {/* Session Statistics */}
         {scanCount > 0 && (
-          <div className="bg-card border rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-medium text-card-foreground mb-3">Session Statistics</h3>
+          <div className="bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <h3 className="text-base sm:text-lg font-medium text-card-foreground mb-3">Session Statistics</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{scanCount}</p>
-                <p className="text-sm text-muted-foreground">Total Scans</p>
+                <p className="text-xl sm:text-2xl font-bold text-primary">{scanCount}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Scans</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-chart-2">{successCount}</p>
-                <p className="text-sm text-muted-foreground">Successful</p>
+                <p className="text-xl sm:text-2xl font-bold text-chart-2">{successCount}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Successful</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Scanner Section */}
-        <div className="bg-card border rounded-lg p-6 mb-6">
+        <div className="bg-card border rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="relative">
             <video
               ref={videoRef}
-              className="w-full h-64 bg-muted rounded-lg object-cover"
+              className="w-full h-48 sm:h-64 bg-muted rounded-lg object-cover"
               playsInline
               muted
             />
@@ -275,8 +277,8 @@ export default function ScannerPage() {
             {!isScanning && !attendanceResult && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-lg">
                 <div className="text-center">
-                  <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">Camera not active</p>
+                  <Camera className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-sm sm:text-base text-muted-foreground">Camera not active</p>
                 </div>
               </div>
             )}
@@ -284,11 +286,11 @@ export default function ScannerPage() {
             {isProcessing && (
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
                 <div className="text-center text-primary-foreground">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-foreground mx-auto mb-2"></div>
-                  <p>Processing QR code...</p>
+                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary-foreground mx-auto mb-2"></div>
+                  <p className="text-sm sm:text-base">Processing QR code...</p>
                   {qrCodePreview && (
-                    <p className="text-xs text-muted-foreground mt-2 font-mono">
-                      {qrCodePreview.substring(0, 50)}...
+                    <p className="text-xs text-muted-foreground mt-2 font-mono px-2">
+                      {qrCodePreview.substring(0, 30)}...
                     </p>
                   )}
                 </div>
@@ -296,12 +298,12 @@ export default function ScannerPage() {
             )}
           </div>
 
-          <div className="mt-6 flex justify-center space-x-4">
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             {!isScanning ? (
               <button
                 onClick={startScanning}
                 disabled={hasPermission === false}
-                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground transition-colors ${
+                className={`inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-foreground transition-colors ${
                   hasPermission === false
                     ? 'bg-muted cursor-not-allowed'
                     : 'bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary'
@@ -313,7 +315,7 @@ export default function ScannerPage() {
             ) : (
               <button
                 onClick={stopScanning}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-destructive-foreground bg-destructive hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-destructive"
+                className="inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-destructive-foreground bg-destructive hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-destructive"
               >
                 <CameraOff className="h-4 w-4 mr-2" />
                 Stop Scanning
@@ -323,7 +325,7 @@ export default function ScannerPage() {
             {attendanceResult && (
               <button
                 onClick={resetScanner}
-                className="inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md shadow-sm text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                className="inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-border text-sm font-medium rounded-md shadow-sm text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 Scan Another
               </button>
@@ -331,8 +333,8 @@ export default function ScannerPage() {
           </div>
 
           {hasPermission === false && (
-            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <p className="text-destructive text-sm">
+            <div className="mt-4 p-3 sm:p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-destructive text-xs sm:text-sm">
                 <strong>Camera Access Denied:</strong> Please allow camera access to use the QR scanner.
               </p>
             </div>

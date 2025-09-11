@@ -31,6 +31,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Stamped - Event Management & Attendance System",
   description: "Complete event management system with QR code attendance tracking, registration, and real-time analytics",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 };
 
 export default function RootLayout({
@@ -45,13 +46,15 @@ export default function RootLayout({
       >
         {children}
         <Toaster 
-          position="bottom-right"
+          position="bottom-center"
           toastOptions={{
             duration: 4000,
             style: {
               background: 'hsl(var(--card))',
               color: 'hsl(var(--card-foreground))',
               border: '1px solid hsl(var(--border))',
+              maxWidth: '90vw',
+              fontSize: '14px',
             },
             success: {
               duration: 3000,

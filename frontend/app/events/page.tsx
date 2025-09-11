@@ -80,41 +80,42 @@ export default function EventsPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <Link href="/" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Home
+        <div className="container">
+          <div className="flex items-center justify-between py-4 sm:py-6">
+            <Link href="/" className="flex items-center text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+              <span className="hidden sm:inline">Back to Home</span>
+              <span className="sm:hidden">Back</span>
             </Link>
             <button
               onClick={handleManualRefresh}
               disabled={refreshing}
-              className="flex items-center text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+              className="flex items-center text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Available Events</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+      <main className="container py-6 sm:py-8">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Available Events</h1>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             Browse through all available events and register for the ones you&apos;d like to attend. 
             You&apos;ll receive a QR code via email after registration.
           </p>
         </div>
 
         {events.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📅</div>
-            <h3 className="text-lg font-medium text-foreground mb-2">No Events Available</h3>
-            <p className="text-muted-foreground">There are currently no active events. Check back later!</p>
+          <div className="text-center py-8 sm:py-12">
+            <div className="text-4xl sm:text-6xl mb-4">📅</div>
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No Events Available</h3>
+            <p className="text-sm sm:text-base text-muted-foreground px-4">There are currently no active events. Check back later!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {events.map((event) => (
               <EventCard key={event._id} event={event} />
             ))}
