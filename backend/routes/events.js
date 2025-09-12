@@ -246,7 +246,6 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
       });
     }
 
-    // Check if the event belongs to the current admin
     if (event.organizer.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
@@ -330,6 +329,10 @@ router.delete('/:id', auth, isAdmin, async (req, res) => {
     }
 
     // Check if the event belongs to the current admin
+    console.log('Debug DELETE - Event organizer:', event.organizer.toString());
+    console.log('Debug DELETE - Request user ID:', req.user.id);
+    console.log('Debug DELETE - Are they equal?', event.organizer.toString() === req.user.id);
+    
     if (event.organizer.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,

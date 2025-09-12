@@ -49,7 +49,7 @@ const verifyToken = async (req, res, next) => {
 
     // Attach admin user to request object
     req.user = {
-      id: admin._id,
+      id: admin._id.toString(),
       username: admin.username,
       createdAt: admin.createdAt
     };
