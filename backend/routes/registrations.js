@@ -271,4 +271,49 @@ router.get('/event/:eventId', verifyToken, async (req, res) => {
   }
 });
 
+/**
+ * @route   GET /api/registrations/test-gmail
+ * @desc    Test Gmail connection (temporary debug endpoint)
+ * @access  Public
+ */
+router.get('/test-gmail', async (req, res) => {
+  try {
+    const nodemailer = require('nodemailer');
+    
+    const transporter = nodemailer.createTransporter({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // Test connection
+    await transporter.verify();
+    
+    res.json({ 
+      success: true, 
+      message: 'Gmail connection successful',
+      config: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        user: process.env.EMAIL_USER ? 'SET' : 'MISSING'
+      }
+    });
+  } catch (error) {
+    console.error('Gmail test failed:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Gmail connection failed',
+      error: error.message,
+      code: error.code
+    });
+  }
+});
+
 module.exports = router;
