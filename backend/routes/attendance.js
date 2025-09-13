@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const { Participant, Event } = require('../models');
 const { parseQRCode } = require('../utils/qr');
 const auth = require('../middleware/auth');
-const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 
@@ -12,7 +11,7 @@ const router = express.Router();
  * @desc    Mark attendance from QR code scan
  * @access  Private (Admin)
  */
-router.post('/mark', auth, isAdmin, async (req, res) => {
+router.post('/mark', auth, async (req, res) => {
   try {
     const { qrData } = req.body;
 
@@ -121,7 +120,7 @@ router.post('/mark', auth, isAdmin, async (req, res) => {
  * @desc    Export attendance data to Excel (admin only)
  * @access  Private (Admin)
  */
-router.get('/export/:eventId', auth, isAdmin, async (req, res) => {
+router.get('/export/:eventId', auth, async (req, res) => {
   try {
     const { eventId } = req.params;
 

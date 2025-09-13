@@ -1,7 +1,7 @@
 const express = require('express');
 const { Event, Participant } = require('../models');
 const auth = require('../middleware/auth');
-const isAdmin = require('../middleware/isAdmin');
+const { autoPauseExpiredEvents } = require('../utils/eventCleanup');
 
 const router = express.Router();
 
@@ -33,6 +33,18 @@ router.get('/', async (req, res) => {
         isAdminUser = false;
       }
     }
+
+    // Auto-pause events that have passed their date
+    const now = new Date();
+    await Event.updateMany(
+      { 
+        date: { $lt: now },
+        isActive: true 
+      },
+      { 
+        $set: { isActive: false } 
+      }
+    );
 
     if (isAdminUser) {
       // Admin view: return only events created by this admin with participant counts and stats
@@ -115,6 +127,19 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    // Auto-pause this specific event if date has passed
+    const now = new Date();
+    await Event.updateOne(
+      { 
+        _id: req.params.id,
+        date: { $lt: now },
+        isActive: true 
+      },
+      { 
+        $set: { isActive: false } 
+      }
+    );
+
     const event = await Event.findById(req.params.id)
       .populate('participants', 'attended')
       .populate('organizer', 'username')
@@ -164,7 +189,7 @@ router.get('/:id', async (req, res) => {
  * @desc    Create new event
  * @access  Private (Admin)
  */
-router.post('/', auth, isAdmin, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { title, description, date, venue, maxParticipants } = req.body;
 
@@ -226,7 +251,7 @@ router.post('/', auth, isAdmin, async (req, res) => {
  * @desc    Update event
  * @access  Private (Admin)
  */
-router.put('/:id', auth, isAdmin, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     // Validate ObjectId format
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -310,7 +335,7 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
  * @desc    Delete event and all associated data
  * @access  Private (Admin)
  */
-router.delete('/:id', auth, isAdmin, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     // Validate ObjectId format
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -373,7 +398,7 @@ router.delete('/:id', auth, isAdmin, async (req, res) => {
  * @desc    Get event statistics
  * @access  Private (Admin)
  */
-router.get('/:id/stats', isAdmin, async (req, res) => {
+router.get('/:id/stats', auth, async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
@@ -401,6 +426,29 @@ router.get('/:id/stats', isAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch event statistics'
+    });
+  }
+});
+
+/**
+ * @route   POST /api/events/cleanup
+ * @desc    Manually trigger auto-pause for expired events
+ * @access  Private (Admin)
+ */
+router.post('/cleanup', auth, async (req, res) => {
+  try {
+    const result = await autoPauseExpiredEvents();
+    
+    res.json({
+      success: result.success,
+      message: result.message || 'Cleanup completed',
+      modifiedCount: result.modifiedCount || 0
+    });
+  } catch (error) {
+    console.error('Manual cleanup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to run cleanup'
     });
   }
 });

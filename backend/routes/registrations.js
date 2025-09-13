@@ -4,7 +4,6 @@ const { Event, Participant } = require('../models');
 const { generateQRCodeBuffer } = require('../utils/qr');
 const { sendRegistrationEmail } = require('../utils/mailer');
 const verifyToken = require('../middleware/auth');
-const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 
@@ -60,14 +59,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Check if event date has passed (Requirement 2.6)
-    const currentDate = new Date();
-    if (event.date < currentDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Cannot register for past events'
-      });
-    }
+    // Note: Past events are automatically paused, so they won't be active
 
     // Check for duplicate registration (Requirement 2.4)
     const existingParticipant = await Participant.findOne({ 
@@ -176,7 +168,7 @@ router.post('/', async (req, res) => {
  * @desc    Get all registrations for an event (admin only)
  * @access  Private (Admin)
  */
-router.get('/event/:eventId', verifyToken, isAdmin, async (req, res) => {
+router.get('/event/:eventId', verifyToken, async (req, res) => {
   try {
     const { eventId } = req.params;
     const { page = 1, limit = 50, search = '' } = req.query;

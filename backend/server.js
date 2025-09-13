@@ -1,10 +1,11 @@
 require("dotenv").config({ path: ".env" });
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/db");
-const setupMiddleware = require("./config/middleware");
 const apiRoutes = require("./routes");
 const errorHandler = require("./middleware/errorHandler");
-const { errorLogger } = require("./middleware/requestLogger");
+const { errorLogger, requestLogger, performanceMonitor, requestId } = require("./middleware/requestLogger");
+const { startEventCleanupTask } = require("./utils/eventCleanup");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -12,9 +13,53 @@ const PORT = process.env.PORT || 5001;
 // Connect to database
 connectDB();
 
+app.set('trust proxy', 1);
+app.use(requestId);
+app.use(requestLogger);
+app.use(performanceMonitor);
 
-// Setup middleware
-setupMiddleware(app);
+// CORS configuration: allow all origins for testing
+const corsOptions = {
+  origin: (origin, callback) => {
+    console.log('CORS request from origin:', origin);
+    callback(null, true); // Allow all origins
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+  exposedHeaders: ['X-Request-ID']
+};
+app.use(cors(corsOptions));
+
+// Body parsing middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Basic security headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.removeHeader('X-Powered-By');
+  next();
+});
+
+// Request timeout (simplified for local development)
+app.use((req, res, next) => {
+  req.setTimeout(30000); // 30 seconds
+  next();
+});
+
+// Health check endpoint (before other middleware)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: process.env.npm_package_version || '2.0.0',
+    environment: process.env.NODE_ENV
+  });
+});
 
 // API routes
 app.use("/api", apiRoutes);
@@ -61,4 +106,7 @@ app.listen(PORT, () => {
   console.log(`🏥 Health check at http://localhost:${PORT}/api/health`);
   console.log("=".repeat(50));
   console.log("✅ Server initialization complete");
+  
+  // Start event cleanup task
+  startEventCleanupTask();
 });

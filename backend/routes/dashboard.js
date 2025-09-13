@@ -3,14 +3,13 @@ const router = express.Router();
 const Event = require('../models/Event');
 const Participant = require('../models/Participant');
 const verifyToken = require('../middleware/auth');
-const isAdmin = require('../middleware/isAdmin');
 
 /**
  * GET /api/dashboard/stats
  * Get dashboard statistics for admin users
  * Returns total events, participants, and attendance rates
  */
-router.get('/stats', verifyToken, isAdmin, async (req, res) => {
+router.get('/stats', verifyToken, async (req, res) => {
   try {
     // Calculate total events
     const totalEvents = await Event.countDocuments({ isActive: true });
@@ -84,10 +83,7 @@ router.get('/stats', verifyToken, isAdmin, async (req, res) => {
       date: { $gte: new Date() }
     });
 
-    const pastEvents = await Event.countDocuments({
-      isActive: true,
-      date: { $lt: new Date() }
-    });
+    // Note: Past events are automatically paused, so no need to count them separately
 
     // Response data
     const stats = {
@@ -96,8 +92,7 @@ router.get('/stats', verifyToken, isAdmin, async (req, res) => {
         totalParticipants,
         totalAttended,
         overallAttendanceRate,
-        upcomingEvents,
-        pastEvents
+        upcomingEvents
       },
       events: eventStats
     };

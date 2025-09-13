@@ -1,5 +1,3 @@
-// Simple request logging without external logger
-
 // Performance monitoring middleware
 const performanceMonitor = (req, res, next) => {
   const startTime = Date.now();
