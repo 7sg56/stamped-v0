@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Mail } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface Event {
@@ -29,7 +29,6 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationData>({
     name: '',
     email: ''
@@ -80,8 +79,19 @@ export default function EventDetailPage() {
       const data = await response.json();
 
       if (data.success) {
-        setRegistrationSuccess(true);
-        toast.success('Registration successful! Check your email for the QR code.');
+        // Redirect to thank you page with registration data
+        const searchParams = new URLSearchParams({
+          name: data.registration.name,
+          email: data.registration.email,
+          registrationId: data.registration.registrationId,
+          eventTitle: data.registration.eventTitle,
+          eventDate: data.registration.eventDate,
+          venue: data.registration.venue,
+          description: event?.description || '',
+          qrCodeData: data.registration.qrCodeData
+        });
+        
+        router.push(`/events/${eventId}/thank-you?${searchParams.toString()}`);
       } else {
         toast.error(data.message || 'Registration failed');
       }
@@ -135,54 +145,6 @@ export default function EventDetailPage() {
     );
   }
 
-  if (registrationSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        <header className="border-b bg-card/50 backdrop-blur-sm">
-          <div className="container">
-            <div className="flex items-center py-4 sm:py-6">
-              <Link href="/events" className="flex items-center text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">
-                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                <span className="hidden sm:inline">Back to Events</span>
-                <span className="sm:hidden">Back</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        <main className="container py-8 sm:py-12">
-          <div className="bg-card rounded-lg shadow-md p-4 sm:p-8 text-center border">
-            <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 mx-auto mb-4 sm:mb-6" />
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Registration Successful!</h1>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-4">
-              Thank you for registering for <strong>{event.title}</strong>. 
-              Your registration has been confirmed and a QR code has been sent to your email.
-            </p>
-            
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
-              <div className="flex items-center justify-center mb-2">
-                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2" />
-                <span className="text-primary font-medium text-sm sm:text-base">Check Your Email</span>
-              </div>
-              <p className="text-primary text-xs sm:text-sm px-2">
-                We&apos;ve sent your QR code to <strong>{registrationData.email}</strong>. 
-                Please check your inbox and spam folder.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <Link
-                href="/events"
-                className="w-full inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
-              >
-                Browse More Events
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">

@@ -2,7 +2,6 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { Event, Participant } = require('../models');
 const { generateQRCodeBuffer } = require('../utils/qr');
-const { sendRegistrationEmail } = require('../utils/mailer');
 const verifyToken = require('../middleware/auth');
 
 const router = express.Router();
@@ -94,25 +93,9 @@ router.post('/', async (req, res) => {
     // Generate QR code buffer for email attachment (Requirement 2.2)
     const qrCodeBuffer = await generateQRCodeBuffer(eventId, registrationId);
 
-    // Send registration confirmation email with QR code (Requirement 2.3)
-    // This must succeed before saving to database to prevent orphaned registrations
-    try {
-      await sendRegistrationEmail({
-        name: trimmedName,
-        email: trimmedEmail,
-        registrationId,
-        eventId,
-        qrCode: qrData
-      }, event, qrCodeBuffer);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError);
-      return res.status(500).json({
-        success: false,
-        message: 'Registration failed: Unable to send confirmation email. Please try again.'
-      });
-    }
+    // Generate QR code buffer for ticket generation
 
-    // Only save to database after email is successfully sent
+    // Save to database
     const participant = new Participant({
       name: trimmedName,
       email: trimmedEmail,
@@ -130,7 +113,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful! QR code sent to your email.',
+      message: 'Registration successful! Generate your ticket below.',
       registration: {
         id: participant._id,
         name: participant.name,
@@ -140,6 +123,7 @@ router.post('/', async (req, res) => {
         eventTitle: event.title,
         eventDate: event.date,
         venue: event.venue,
+        qrCodeData: qrCodeBuffer.toString('base64'), // Base64 encoded QR code for frontend
         createdAt: participant.createdAt
       }
     });
