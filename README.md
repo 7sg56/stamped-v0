@@ -17,6 +17,7 @@
 ## 📋 Table of Contents
 
 - [Features](#-features)
+- [Planned Features](#-planned-features)
 - [Tech Stack](#-tech-stack)
 - [Quick Start](#-quick-start)
 - [Documentation](#-documentation)
@@ -24,12 +25,22 @@
 
 ## ✨ Features
 
+### Current Features
 - **Event Management** - Create and manage events with full CRUD operations
 - **QR Code Attendance** - Real-time QR code scanning for instant check-ins
 - **Admin Dashboard** - Comprehensive analytics and event management
 - **Email Notifications** - Automatic QR code delivery via email
 - **Data Export** - Export attendance data as CSV/Excel files
 - **Responsive Design** - Mobile-first design that works on all devices
+
+### 🚧 Planned Features
+
+- **Super Admin Route** - Access to all events across the platform with centralized management
+- **Account Verification System** - Super admin approval process for new accounts before they can publish events
+- **Enhanced Event Media** - Image carousels and video playback in event cards and detail pages
+- **Advanced Analytics** - Improved reporting and insights dashboard
+- **Billing & Subscriptions** - Usage-based pricing and subscription management
+
 
 ## 🛠️ Tech Stack
 
@@ -118,6 +129,18 @@ Configuration guide for development and production.
 [View Environment Guide →](docs/ENV.md)
 
 </details>
+
+## 🤝 Contributing
+
+This project is **open to contributions**! We welcome community involvement in:
+
+- 🐛 Bug fixes and improvements
+- ✨ New feature development
+- 📚 Documentation enhancements
+- 🎨 UI/UX improvements
+- 🧪 Testing and quality assurance
+
+Feel free to open issues, submit pull requests, or reach out with ideas!
 
 ---
 
