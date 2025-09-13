@@ -243,15 +243,6 @@ async function sendRegistrationEmail(participant, event, qrCodeBuffer) {
       response: result.response
     };
   } catch (error) {
-    console.error('Email sending error details:', {
-      message: error.message,
-      code: error.code,
-      response: error.response,
-      responseCode: error.responseCode,
-      command: error.command,
-      errno: error.errno,
-      syscall: error.syscall
-    });
     throw new Error(`Failed to send registration email: ${error.message}`);
   }
 }

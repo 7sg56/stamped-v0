@@ -18,18 +18,22 @@ app.use(requestId);
 app.use(requestLogger);
 app.use(performanceMonitor);
 
-// CORS configuration: allow all origins for testing
+// CORS configuration: allow specific origins
 const corsOptions = {
-  origin: (origin, callback) => {
-    console.log('CORS request from origin:', origin);
-    callback(null, true); // Allow all origins
-  },
+  origin: [
+    'http://localhost:3000',
+    'https://stamped-v0.vercel.app',
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
-  exposedHeaders: ['X-Request-ID']
+  exposedHeaders: ['X-Request-ID'],
+  optionsSuccessStatus: 200 // For legacy browser support
 };
 app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
