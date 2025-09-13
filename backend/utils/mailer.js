@@ -11,11 +11,15 @@ const nodemailer = require('nodemailer');
 function createTransporter() {
   const config = {
     host: process.env.EMAIL_HOST,
-    port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: process.env.EMAIL_PORT === '465', // true for 465, false for other ports
+    port: parseInt(process.env.EMAIL_PORT) || 465,
+    secure: true, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
+    },
+    // Gmail specific settings
+    tls: {
+      rejectUnauthorized: false
     }
   };
 
@@ -239,6 +243,15 @@ async function sendRegistrationEmail(participant, event, qrCodeBuffer) {
       response: result.response
     };
   } catch (error) {
+    console.error('Email sending error details:', {
+      message: error.message,
+      code: error.code,
+      response: error.response,
+      responseCode: error.responseCode,
+      command: error.command,
+      errno: error.errno,
+      syscall: error.syscall
+    });
     throw new Error(`Failed to send registration email: ${error.message}`);
   }
 }
