@@ -1,246 +1,128 @@
+# Stamped
 
-# Stamped - Event Management & Attendance System
+<div align="center">
 
-A modern, full-stack event management system with QR code-based attendance tracking. Features a sleek dark-themed frontend built with Next.js 15 and a robust backend API with Node.js, Express, and MongoDB.
+**Event management system with QR code attendance tracking**
 
+<div align="center">
 
-<p align="center">
-   <img src="frontend/public/website.png" alt="Website Preview" width="700" />
-</p>
+### Website Landing Page
+<img src="assets/website.png" alt="Stamped Website" width="800" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"/>
 
-<p align="center">
-   <img src="frontend/public/admin-dashboard.png" alt="Admin Dashboard Preview" width="700" />
-</p>
+### Admin Dashboard
+<img src="assets/admin-dashboard.png" alt="Admin Dashboard" width="800" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"/>
 
-## Features
+</div>
 
-### 🎯 Core Functionality
-- **Event Management**: Create and manage events with full CRUD operations
-- **Participant Registration**: Register for events with automatic QR code generation
-- **Smart Attendance Tracking**: Advanced QR code-based check-in system with duplicate prevention
-- **Admin Authentication**: JWT-based secure admin access with protected routes
-- **Email Integration**: Automatic QR code delivery via email
-- **Data Export**: Export attendance data as CSV/Excel files
+## 📋 Table of Contents
 
-### 🎨 Frontend Features
-- **Modern Dark Theme**: Sleek, professional dark-themed UI with consistent styling
-- **Responsive Design**: Mobile-first design that works on all devices
-- **Real-time Scanner**: Advanced QR code scanner with live camera feed
-- **Enhanced Scanner Display**: Shows participant info, event details, and attendance statistics
-- **Accessibility**: Proper ARIA labels and keyboard navigation
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Documentation](#-documentation)
+- [Live Demo](#-live-demo)
 
-## Tech Stack
+## ✨ Features
 
-### Backend
-- **Node.js** + **Express.js** - RESTful API server
-- **MongoDB** + **Mongoose** - Database and ODM
-- **JWT** - Authentication and authorization
-- **QRCode** - QR code generation
-- **Nodemailer** - Email service integration
+- **Event Management** - Create and manage events with full CRUD operations
+- **QR Code Attendance** - Real-time QR code scanning for instant check-ins
+- **Admin Dashboard** - Comprehensive analytics and event management
+- **Email Notifications** - Automatic QR code delivery via email
+- **Data Export** - Export attendance data as CSV/Excel files
+- **Responsive Design** - Mobile-first design that works on all devices
+
+## 🛠️ Tech Stack
 
 ### Frontend
 - **Next.js 15** - React framework with App Router
-- **Tailwind CSS v4** - Utility-first styling with dark theme
+- **Tailwind CSS** - Utility-first styling
 - **shadcn/ui** - Modern component library
-- **Aceternity UI** - Advanced UI components and animations
-- **QR Scanner** - Real-time QR code scanning
+- **Aceternity UI** - Advanced animations and effects
 
-## Project Structure
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **JWT** - Authentication
+- **QRCode** - QR generation
 
-```
-stamped/
-├── backend/                    # Backend API server
-│   ├── config/                # Database and middleware configuration
-│   ├── middleware/            # Authentication and error handling
-│   ├── models/               # MongoDB data models (Event, Participant, Admin)
-│   ├── routes/               # API route handlers
-│   ├── utils/                # Utility functions (QR, email, validation)
-│   ├── seed/                 # Database seeding scripts
-│   └── server.js             # Application entry point
-├── frontend/                  # Next.js frontend application
-│   ├── app/                  # App Router pages and layouts
-│   │   ├── dashboard/        # Admin dashboard
-│   │   ├── events/           # Event management pages
-│   │   ├── login/            # Admin login
-│   │   ├── scanner/          # QR code scanner
-│   │   └── globals.css       # Global styles and theme
-│   ├── components/           # Reusable UI components
-│   │   ├── ui/               # shadcn/ui components
-│   │   └── EventCard.tsx     # Custom components
-│   ├── lib/                  # Utility functions
-│   └── public/               # Static assets
-├── README.md                 # Project documentation
-├── env.example               # Environment variables template
-├── EMAIL_SETUP_GUIDE.md      # Email configuration guide
-└── test-email.js             # Email testing script
-```
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v18 or higher)
-- MongoDB (local installation or MongoDB Atlas)
+- Node.js (v18+)
+- MongoDB (local or Atlas)
 - npm
 
 ### Installation
 
-1. **Clone and navigate to the project**
-
+1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/yourusername/stamped.git
    cd stamped
    ```
 
-2. **Backend Setup**
-
+2. **Install dependencies**
    ```bash
-   cd backend
-   npm install
+   # Backend
+   cd backend && npm install
+   
+   # Frontend  
+   cd frontend && npm install
    ```
 
-3. **Frontend Setup**
-
+3. **Environment setup**
    ```bash
-   cd ../frontend
-   npm install
-   ```
-
-
-4. **Environment Setup**
-
-   ```bash
-   # From the root directory
    cp env.example .env
+   # Update .env with your configuration
    ```
 
-   > **Frontend Environment Variables**
-   >
-   > Next.js only loads environment variables from `.env.local` (or `.env`) inside the `frontend/` directory. If you want to keep a single source of truth for your environment variables at the project root, you can symlink or copy the file:
-   >
-   > ```bash
-   > # Symlink root .env.local to frontend/.env.local (recommended for local dev)
-   > ln -s ../.env.local ./frontend/.env.local
-   > # Or copy if symlinks are not supported
-   > cp ../.env.local ./frontend/.env.local
-   > ```
-   >
-   > This ensures the frontend picks up the correct environment variables. You must restart the frontend dev server after changing `.env.local`.
-
-   Update the `.env` file with your configuration:
-
-   ```env
-   # Database
-   MONGODB_URI=mongodb://localhost:27017/stamped-attendance
-
-   # Server Configuration
-   PORT=5001
-   NODE_ENV=development
-
-   # API Configuration
-   API_URL=http://localhost:5001
-   NEXT_PUBLIC_API_URL=http://localhost:5001
-
-   # JWT Secret (use a strong secret in production)
-   JWT_SECRET=your-super-secret-jwt-key-here
-
-   # Admin Credentials (for seeding)
-   ADMIN_USERNAME=admin
-   ADMIN_PASSWORD=admin123
-
-   # Email Configuration (for QR code delivery)
-   EMAIL_HOST=smtp.gmail.com
-   EMAIL_PORT=587
-   EMAIL_USER=your-email@gmail.com
-   EMAIL_PASS=your-app-password
-   EMAIL_FROM=your-email@gmail.com
-   ```
-
-   **Key Variables:**
-   - `PORT`: Backend server port (default: 5001)
-   - `NEXT_PUBLIC_API_URL`: Frontend API URL (default: http://localhost:5001)
-   - `MONGODB_URI`: MongoDB connection string
-   - `JWT_SECRET`: Secret key for JWT tokens
-
-5. **Start MongoDB**
-
+4. **Start development servers**
    ```bash
-   # If using local MongoDB
-   mongod
-
-   # Or use Docker
-   docker run -d -p 27017:27017 --name mongodb mongo:latest
-
-   # Or use MongoDB Atlas connection string in MONGODB_URI
+   # Backend (Terminal 1)
+   cd backend && npm run dev
+   
+   # Frontend (Terminal 2)
+   cd frontend && npm run dev
    ```
 
-6. **Seed the database**
+### Access Points
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5001
+- **Default Admin**: `admin` / `admin123`
 
-   ```bash
-   cd backend
-   npm run seed
-   ```
+## 📚 Documentation
 
-7. **Start the development servers**
+<details>
+<summary><strong>📖 API Endpoints</strong></summary>
 
-   ```bash
-   # Terminal 1 - Backend
-   cd backend
-   npm run dev
+Complete API reference with request/response examples.
 
-   # Terminal 2 - Frontend
-   cd frontend
-   npm run dev
-   ```
+[View API Documentation →](docs/API.md)
 
-- Backend API: `http://localhost:5001`
-- Frontend App: `http://localhost:3000`
+</details>
 
+<details>
+<summary><strong>🏗️ Project Structure</strong></summary>
 
-## API Endpoints
+Detailed file organization and directory explanations.
 
-### Authentication
+[View Structure Guide →](docs/STRUCTURE.md)
 
-- `POST /api/auth/login` - Admin login
-- `GET /api/auth/verify` - Verify JWT token
+</details>
 
-### Events
+<details>
+<summary><strong>⚙️ Environment Setup</strong></summary>
 
-- `GET /api/events` - Get all events
-- `GET /api/events/:id` - Get specific event
-- `POST /api/events` - Create new event (admin)
-- `PUT /api/events/:id` - Update event (admin)
-- `DELETE /api/events/:id` - Delete event (admin)
+Configuration guide for development and production.
 
-### Participants
+[View Environment Guide →](docs/ENV.md)
 
-- `POST /api/registrations` - Register for event
-- `GET /api/registrations/event/:eventId` - Get event registrations (admin)
-
-### Attendance
-
-- `POST /api/attendance/mark` - Mark attendance via QR code
-- `GET /api/attendance/event/:eventId` - Get event attendance (admin)
-- `GET /api/attendance/stats/:eventId` - Get attendance statistics (admin)
-
-### Export
-
-- `GET /api/export/:eventId` - Export event data as Excel
-
-## 🎯 Enhanced QR Scanner Features
-
-The scanner page (`/scanner`) includes advanced functionality for real-time attendance tracking:
-
-### Scanner Capabilities
-- **Live Camera Feed**: Real-time QR code detection with camera access
-- **QR Code Preview**: Shows scanned data before processing
-- **Session Statistics**: Tracks total scans and successful attendance markings
-- **Duplicate Detection**: Prevents double-check-ins with detailed error messages
-
-
-### Testing Status
-⚠️ **Currently in Testing Mode**: The QR scanner is actively being tested and refined. Features may be updated based on testing feedback.
+</details>
 
 ---
 
-This project demonstrates backend development best practices including API design, database modeling, authentication, testing, and integration with external services.
+<div align="center">
+
+**Built with ❤️ by [Sourish Ghosh](https://github.com/7sg56)**
+
+</div>
