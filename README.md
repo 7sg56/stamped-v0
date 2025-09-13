@@ -1,18 +1,14 @@
 # Stamped
 
-<div align="center">
-
 **Event management system with QR code attendance tracking**
 
-<div align="center">
+## Screenshots
 
 ### Website Landing Page
 <img src="assets/website.png" alt="Stamped Website" width="800" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"/>
 
 ### Admin Dashboard
 <img src="assets/admin-dashboard.png" alt="Admin Dashboard" width="800" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"/>
-
-</div>
 
 ## 📋 Table of Contents
 
@@ -99,36 +95,20 @@
 ### Access Points
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5001
-- **Default Admin**: `admin` / `admin123`
 
 ## 📚 Documentation
 
-<details>
-<summary><strong>📖 API Endpoints</strong></summary>
+| Document | Description | Link |
+|----------|-------------|------|
+| 📖 **API Reference** | Complete API endpoints with request/response examples | [View API Docs](docs/API.md) |
+| 🏗️ **Project Structure** | Detailed file organization and directory explanations | [View Structure Guide](docs/STRUCTURE.md) |
+| ⚙️ **Environment Setup** | Configuration guide for development and production | [View Environment Guide](docs/ENV.md) |
 
-Complete API reference with request/response examples.
-
-[View API Documentation →](docs/API.md)
-
-</details>
-
-<details>
-<summary><strong>🏗️ Project Structure</strong></summary>
-
-Detailed file organization and directory explanations.
-
-[View Structure Guide →](docs/STRUCTURE.md)
-
-</details>
-
-<details>
-<summary><strong>⚙️ Environment Setup</strong></summary>
-
-Configuration guide for development and production.
-
-[View Environment Guide →](docs/ENV.md)
-
-</details>
+### Quick Navigation
+- **Getting Started**: See [Quick Start](#-quick-start) section below
+- **API Integration**: Check [API Documentation](docs/API.md) for endpoint details
+- **Development Setup**: Follow [Environment Guide](docs/ENV.md) for configuration
+- **Code Organization**: Review [Structure Guide](docs/STRUCTURE.md) for file layout
 
 ## 🤝 Contributing
 
@@ -144,8 +124,4 @@ Feel free to open issues, submit pull requests, or reach out with ideas!
 
 ---
 
-<div align="center">
-
 **Built with ❤️ by [Sourish Ghosh](https://github.com/7sg56)**
-
-</div>
