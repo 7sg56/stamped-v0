@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { QrCode, Shield, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Spotlight } from '@/components/ui/spotlight';
+import { ShootingStars } from '@/components/ui/shooting-stars';
+import { StarsBackground } from '@/components/ui/stars-background';
 
 // Clean Professional Stamp Logo Component
 const StampLogo = ({ size = "w-10 h-10", className = "", animated = false }) => {
@@ -37,9 +39,28 @@ const StampLogo = ({ size = "w-10 h-10", className = "", animated = false }) => 
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
+      
+      <StarsBackground 
+        starDensity={0.0004} 
+        allStarsTwinkle={true} 
+        twinkleProbability={0.7}
+        minTwinkleSpeed={0.3}
+        maxTwinkleSpeed={0.8}
+      />
+      <ShootingStars 
+        minSpeed={10}
+        maxSpeed={30}
+        minDelay={4200}
+        maxDelay={8700}
+        starColor="#9E00FF"
+        trailColor="#2EB9DF"
+        starWidth={10}
+        starHeight={1}
+      />
+      
       {/* Subtle wavy background effect */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-5 z-[-5]">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/20 via-transparent to-primary/20 transform -skew-y-1"></div>
         <div className="absolute top-20 left-0 w-full h-full bg-gradient-to-l from-primary/10 via-transparent to-primary/10 transform skew-y-1"></div>
       </div>
@@ -75,14 +96,14 @@ export default function Home() {
       {/* Hero Section - Full Page */}
       <main className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative pt-16 sm:pt-20">
         {/* Spotlight Effect */}
-        <Spotlight className="-top-[48rem] -left-60 animate-spotlight" fill="white" />
+        <Spotlight className="-top-[40rem] -left-60 animate-spotlight" fill="white" />
         <div className="text-center max-w-6xl mx-auto relative z-10">
           
           <h1 className="text-4xl sm:text-5xl md:text-8xl lg:text-9xl font-black text-foreground mb-4 sm:mb-6 leading-tight">
-            <span className="block font-orbitron font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/60 hover:from-primary/80 hover:via-primary hover:to-primary/80 transition-all duration-500 cursor-default">
+            <span className="block font-orbitron font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/60 cursor-default">
               STAMPED
             </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playfair font-semibold text-primary/90 mt-1 hover:text-primary transition-colors duration-300 cursor-default">
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playfair font-semibold text-primary/90 mt-1 cursor-default">
               Event Management
             </span>
           </h1>
