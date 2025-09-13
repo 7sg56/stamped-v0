@@ -91,7 +91,28 @@ router.post('/', async (req, res) => {
     // Generate QR code data format: "eventId:registrationId" (Requirement 2.2)
     const qrData = `${eventId}:${registrationId}`;
 
-    // Create participant record
+    // Generate QR code buffer for email attachment (Requirement 2.2)
+    const qrCodeBuffer = await generateQRCodeBuffer(eventId, registrationId);
+
+    // Send registration confirmation email with QR code (Requirement 2.3)
+    // This must succeed before saving to database to prevent orphaned registrations
+    try {
+      await sendRegistrationEmail({
+        name: trimmedName,
+        email: trimmedEmail,
+        registrationId,
+        eventId,
+        qrCode: qrData
+      }, event, qrCodeBuffer);
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Registration failed: Unable to send confirmation email. Please try again.'
+      });
+    }
+
+    // Only save to database after email is successfully sent
     const participant = new Participant({
       name: trimmedName,
       email: trimmedEmail,
@@ -106,18 +127,6 @@ router.post('/', async (req, res) => {
     // Add participant to event's participants array
     event.participants.push(participant._id);
     await event.save();
-
-    // Generate QR code buffer for email attachment (Requirement 2.2)
-    const qrCodeBuffer = await generateQRCodeBuffer(eventId, registrationId);
-
-    // Send registration confirmation email with QR code (Requirement 2.3)
-    try {
-      await sendRegistrationEmail(participant, event, qrCodeBuffer);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError);
-      // Log error but don't fail the registration
-      // In production, you might want to queue this for retry
-    }
 
     res.status(201).json({
       success: true,
