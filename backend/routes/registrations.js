@@ -280,7 +280,7 @@ router.get('/test-gmail', async (req, res) => {
   try {
     const nodemailer = require('nodemailer');
     
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
