@@ -109,9 +109,7 @@ export default function EventDetailPage() {
     return !!(event?.maxParticipants && event.participantCount >= event.maxParticipants);
   };
 
-  const isEventPast = () => {
-    return !!(event && new Date(event.date) < new Date());
-  };
+  // Note: Past events are automatically paused, so they won't be accessible
 
   if (loading) {
     return (
@@ -235,13 +233,6 @@ export default function EventDetailPage() {
               </div>
             )}
 
-            {isEventPast() && (
-              <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <p className="text-yellow-500 text-xs sm:text-sm">
-                  <strong>Event Ended:</strong> This event has already taken place.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Registration Form */}
@@ -286,9 +277,9 @@ export default function EventDetailPage() {
 
               <button
                 type="submit"
-                disabled={submitting || isEventFull() || isEventPast()}
+                disabled={submitting || isEventFull()}
                 className={`w-full flex justify-center py-3 sm:py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground transition-colors ${
-                  submitting || isEventFull() || isEventPast()
+                  submitting || isEventFull()
                     ? 'bg-muted cursor-not-allowed'
                     : 'bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring'
                 }`}

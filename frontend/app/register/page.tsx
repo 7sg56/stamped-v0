@@ -135,7 +135,7 @@ export default function AdminRegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded-sm hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-150"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />

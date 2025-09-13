@@ -38,7 +38,6 @@ export default function EventCard({ event }: EventCardProps) {
   };
 
   const isEventFull = event.maxParticipants && event.participantCount >= event.maxParticipants;
-  const isEventPast = new Date(event.date) < new Date();
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
@@ -56,11 +55,6 @@ export default function EventCard({ event }: EventCardProps) {
             {!event.isActive && (
               <span className="px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full">
                 Inactive
-              </span>
-            )}
-            {isEventPast && (
-              <span className="px-2 py-1 bg-destructive/10 text-destructive text-xs font-semibold rounded-full">
-                Past Event
               </span>
             )}
             {isEventFull && (
@@ -107,7 +101,7 @@ export default function EventCard({ event }: EventCardProps) {
             </Link>
           </Button>
           
-          {event.isActive && !isEventPast && !isEventFull && (
+          {event.isActive && !isEventFull && (
             <Button variant="outline" asChild className="flex-1 sm:flex-none">
               <Link href={`/events/${event._id}`}>
                 Register

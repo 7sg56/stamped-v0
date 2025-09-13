@@ -97,7 +97,7 @@ export default function AdminDashboard() {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     toast.success('Logged out successfully');
-    router.push('/login');
+    router.push('/');
   };
 
   const formatDate = (dateString: string) => {
@@ -320,14 +320,14 @@ export default function AdminDashboard() {
                       <div className="ml-4 flex items-center space-x-2">
                         <Link
                           href={`/events/admin/${event._id}`}
-                          className="inline-flex items-center px-3 py-1 border border-border text-xs font-medium rounded text-foreground bg-card hover:bg-muted"
+                          className="inline-flex items-center px-3 py-1 border border-border text-xs font-medium rounded text-foreground bg-card hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"
                         >
                           <Eye className="h-3 w-3 mr-1" />
                           View
                         </Link>
                         <button
                           onClick={() => exportEventData(event._id, event.title)}
-                          className="inline-flex items-center px-3 py-1 border border-border text-xs font-medium rounded text-foreground bg-card hover:bg-muted"
+                          className="inline-flex items-center px-3 py-1 border border-border text-xs font-medium rounded text-foreground bg-card hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"
                         >
                           <Download className="h-3 w-3 mr-1" />
                           Export

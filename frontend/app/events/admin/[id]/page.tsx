@@ -245,7 +245,7 @@ export default function AdminEventDetailPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={exportEventData}
-                className="flex items-center px-3 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted"
+                className="flex items-center px-3 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export
