@@ -16,7 +16,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.0",
     "multer": "^2.0.0-rc.4",
-    "nodemailer": "^6.9.7",
     "qrcode": "^1.5.4",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5"

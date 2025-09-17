@@ -32,7 +32,21 @@ export default function EventsPage() {
     // Set up periodic refresh every 30 seconds to keep participant counts updated
     const refreshInterval = setInterval(fetchEvents, 30000);
     
-    return () => clearInterval(refreshInterval);
+    // Refresh when page becomes visible (user navigates back)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchEvents();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(refreshInterval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
   }, []);
 
   const fetchEvents = async (isManualRefresh = false) => {

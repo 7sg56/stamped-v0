@@ -48,27 +48,6 @@ ADMIN_PASSWORD=admin123
 - **ADMIN_USERNAME**: Default admin username
 - **ADMIN_PASSWORD**: Default admin password
 
-### Email Configuration
-```env
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-EMAIL_FROM=your-email@gmail.com
-```
-
-#### Gmail Setup
-1. Enable 2-factor authentication
-2. Generate an App Password:
-   - Go to Google Account settings
-   - Security → 2-Step Verification → App passwords
-   - Generate password for "Mail"
-3. Use the generated password in `EMAIL_PASS`
-
-#### Other Email Providers
-- **Outlook**: `smtp-mail.outlook.com:587`
-- **Yahoo**: `smtp.mail.yahoo.com:587`
-- **Custom SMTP**: Use your provider's settings
 
 ## Frontend Environment Variables
 
@@ -121,14 +100,6 @@ JWT_SECRET=your-very-long-and-secure-jwt-secret-key-here
 # Admin
 ADMIN_USERNAME=your-admin-username
 ADMIN_PASSWORD=your-secure-admin-password
-
-# Email
-EMAIL_HOST=smtp.yourdomain.com
-EMAIL_PORT=587
-EMAIL_USER=noreply@yourdomain.com
-EMAIL_PASS=your-email-password
-EMAIL_FROM=noreply@yourdomain.com
-```
 
 ## Troubleshooting
 

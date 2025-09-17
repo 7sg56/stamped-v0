@@ -23,7 +23,6 @@ stamped/
 │   │   └── index.js          # Route exports
 │   ├── utils/                # Utility functions
 │   │   ├── qr.js             # QR code generation
-│   │   ├── mailer.js         # Email service
 │   │   ├── csv.js            # CSV export functionality
 │   │   ├── errorResponse.js  # Error response helpers
 │   │   └── eventCleanup.js   # Event cleanup tasks
@@ -82,7 +81,7 @@ stamped/
 - **`middleware/`** - Express middleware for auth, logging, error handling
 - **`models/`** - Mongoose schemas for database entities
 - **`routes/`** - API endpoint definitions and handlers
-- **`utils/`** - Helper functions for QR codes, emails, exports
+- **`utils/`** - Helper functions for QR codes, exports, and utilities
 
 ### Frontend (`/frontend`)
 - **`app/`** - Next.js App Router pages and layouts

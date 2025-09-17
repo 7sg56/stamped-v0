@@ -58,6 +58,21 @@ export default function EventDetailPage() {
     if (eventId) {
       fetchEvent();
     }
+    
+    // Refresh when page becomes visible (user navigates back)
+    const handleVisibilityChange = () => {
+      if (!document.hidden && eventId) {
+        fetchEvent();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
   }, [eventId, fetchEvent]);
 
   const handleSubmit = async (e: React.FormEvent) => {

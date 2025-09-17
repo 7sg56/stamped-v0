@@ -25,7 +25,7 @@
 - **Event Management** - Create and manage events with full CRUD operations
 - **QR Code Attendance** - Real-time QR code scanning for instant check-ins
 - **Admin Dashboard** - Comprehensive analytics and event management
-- **Email Notifications** - Automatic QR code delivery via email
+- **Digital Tickets** - Professional PDF ticket generation with QR codes
 - **Data Export** - Export attendance data as CSV/Excel files
 - **Responsive Design** - Mobile-first design that works on all devices
 
@@ -52,6 +52,7 @@
 - **MongoDB** - Database
 - **JWT** - Authentication
 - **QRCode** - QR generation
+- **jsPDF** - PDF ticket generation
 
 ## 🚀 Quick Start
 

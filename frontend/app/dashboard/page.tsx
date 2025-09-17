@@ -64,6 +64,21 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (adminUser) {
       fetchEvents();
+      
+      // Refresh when page becomes visible (user navigates back)
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          fetchEvents();
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', handleVisibilityChange);
+      
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleVisibilityChange);
+      };
     }
   }, [adminUser]);
 

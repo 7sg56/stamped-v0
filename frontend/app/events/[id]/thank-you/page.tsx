@@ -69,25 +69,63 @@ export default function ThankYouPage() {
         qrCodeData
       });
       
-      // Create event object from URL params
-      setEvent({
-        _id: eventId,
-        title: eventTitle,
-        description: description || '',
-        date: eventDate,
-        venue,
-        maxParticipants: null,
-        isActive: true,
-        participantCount: 0,
-        organizer: { username: 'Event Organizer' }
-      });
-      
-      setLoading(false);
+      // Fetch actual event data to get updated participant count
+      fetchEventData();
     } else {
       toast.error('Invalid registration data');
       router.push('/events');
     }
   }, [eventId, searchParams, router]);
+
+  const fetchEventData = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setEvent(data.event);
+      } else {
+        // Fallback to URL params if API fails
+        const eventTitle = searchParams.get('eventTitle');
+        const eventDate = searchParams.get('eventDate');
+        const venue = searchParams.get('venue');
+        const description = searchParams.get('description');
+        
+        setEvent({
+          _id: eventId,
+          title: eventTitle || '',
+          description: description || '',
+          date: eventDate || '',
+          venue: venue || '',
+          maxParticipants: null,
+          isActive: true,
+          participantCount: 0,
+          organizer: { username: 'Event Organizer' }
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching event data:', error);
+      // Fallback to URL params if API fails
+      const eventTitle = searchParams.get('eventTitle');
+      const eventDate = searchParams.get('eventDate');
+      const venue = searchParams.get('venue');
+      const description = searchParams.get('description');
+      
+      setEvent({
+        _id: eventId,
+        title: eventTitle || '',
+        description: description || '',
+        date: eventDate || '',
+        venue: venue || '',
+        maxParticipants: null,
+        isActive: true,
+        participantCount: 0,
+        organizer: { username: 'Event Organizer' }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Auto-download ticket when registration data is available
   useEffect(() => {
