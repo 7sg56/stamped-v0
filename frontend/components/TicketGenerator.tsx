@@ -36,11 +36,10 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
       const pageHeight = pdf.internal.pageSize.getHeight();
       
       // Define consistent margins and spacing
-      const margin = 15;
-      const headerHeight = 45;
-      const sectionSpacing = 8;
-      const lineSpacing = 6;
-      const labelWidth = 35;
+       const margin = 15;
+       const headerHeight = 45;
+       const sectionSpacing = 8;
+       const labelWidth = 35;
       
        // Color definitions
        const primaryColor: [number, number, number] = [0, 0, 0]; // Professional blue
@@ -100,8 +99,7 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
       const leftColumnX = margin + 10;
       const rightColumnX = leftColumnX + columnWidth + 10;
       
-      // LEFT COLUMN - Participant & Event Details
-      let currentY = contentY + 15;
+       // LEFT COLUMN - Participant & Event Details
       
       // Helper function to create section headers
       const createSectionHeader = (text: string, x: number, y: number, width: number) => {
@@ -151,17 +149,18 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
         return lineY + 2; // Return next line position
       };
       
-      // Participant Details Section
-      currentY = createSectionHeader('PARTICIPANT DETAILS', leftColumnX, currentY, columnWidth);
-      
-      currentY = addLabeledInfo('Full Name', ticketData.participant.name, leftColumnX + 5, currentY);
-      currentY = addLabeledInfo('Email Address', ticketData.participant.email, leftColumnX + 5, currentY);
-      currentY = addLabeledInfo('Registration ID', ticketData.participant.registrationId, leftColumnX + 5, currentY);
-      
-      currentY += sectionSpacing;
-      
-      // Event Details Section
-      currentY = createSectionHeader('EVENT DETAILS', leftColumnX, currentY, columnWidth);
+       // Participant Details Section
+       let currentY = contentY + 15;
+       currentY = createSectionHeader('PARTICIPANT DETAILS', leftColumnX, currentY, columnWidth);
+       
+       currentY = addLabeledInfo('Full Name', ticketData.participant.name, leftColumnX + 5, currentY);
+       currentY = addLabeledInfo('Email Address', ticketData.participant.email, leftColumnX + 5, currentY);
+       currentY = addLabeledInfo('Registration ID', ticketData.participant.registrationId, leftColumnX + 5, currentY);
+       
+       currentY += sectionSpacing;
+       
+       // Event Details Section
+       currentY = createSectionHeader('EVENT DETAILS', leftColumnX, currentY, columnWidth);
       
       // Format date nicely
       const eventDate = new Date(ticketData.event.date);

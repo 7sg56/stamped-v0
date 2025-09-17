@@ -190,7 +190,7 @@ export default function ThankYouPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Thank You for Registering!</h1>
             <p className="text-base sm:text-lg text-muted-foreground mb-6">
               Your registration for <strong>{event.title}</strong> has been confirmed. 
-              We're excited to see you at the event!
+              We&apos;re excited to see you at the event!
             </p>
             
             <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
