@@ -30,187 +30,229 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
     try {
       const { jsPDF } = await import('jspdf');
       
-      // Create PDF document with landscape orientation for better ticket layout
+      // Create PDF document with landscape orientation
       const pdf = new jsPDF('l', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
+      // Define consistent margins and spacing
+      const margin = 15;
+      const headerHeight = 45;
+      const sectionSpacing = 8;
+      const lineSpacing = 6;
+      const labelWidth = 35;
+      
+       // Color definitions
+       const primaryColor: [number, number, number] = [0, 0, 0]; // Professional blue
+       const darkGray: [number, number, number] = [44, 62, 80];
+       const lightGray: [number, number, number] = [236, 240, 241];
+       const white: [number, number, number] = [255, 255, 255];
+       const black: [number, number, number] = [0, 0, 0];
+      
       // Set font
       pdf.setFont('helvetica');
       
-      // Header Section - Black background
-      pdf.setFillColor(0, 0, 0); // Black color
-      pdf.rect(0, 0, pageWidth, 40, 'F');
+      // HEADER SECTION
+      // Main header background with gradient effect
+      pdf.setFillColor(...primaryColor);
+      pdf.rect(0, 0, pageWidth, headerHeight, 'F');
       
-      // Event Title (white text on black background)
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(32);
+      // Add a subtle accent stripe
+      pdf.setFillColor(...darkGray);
+      pdf.rect(0, headerHeight - 4, pageWidth, 4, 'F');
+      
+      // Event title
+      pdf.setTextColor(...white);
+      pdf.setFontSize(28);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(ticketData.event.title, pageWidth / 2, 25, { align: 'center' });
       
-      // Ticket subtitle
-      pdf.setFontSize(16);
+      // Handle long titles by adjusting font size
+      const titleWidth = pdf.getTextWidth(ticketData.event.title);
+      if (titleWidth > pageWidth - 40) {
+        pdf.setFontSize(24);
+      }
+      if (titleWidth > pageWidth - 40) {
+        pdf.setFontSize(20);
+      }
+      
+      pdf.text(ticketData.event.title, pageWidth / 2, 20, { align: 'center' });
+      
+      // Event subtitle
+      pdf.setFontSize(14);
       pdf.setFont('helvetica', 'normal');
-      pdf.text('EVENT TICKET', pageWidth / 2, 35, { align: 'center' });
+      pdf.text('EVENT ADMISSION TICKET', pageWidth / 2, 32, { align: 'center' });
       
-      // Reset text color to black
-      pdf.setTextColor(0, 0, 0);
+      // MAIN CONTENT AREA
+      const contentY = headerHeight + margin;
+      const contentHeight = pageHeight - headerHeight - (margin * 2) - 15; // Space for footer
       
-      // Main content area
-      const contentStartY = 50;
-      const contentWidth = pageWidth - 40;
-      const contentHeight = pageHeight - 100;
+      // Main content background
+      pdf.setFillColor(...lightGray);
+      pdf.rect(margin, contentY, pageWidth - (margin * 2), contentHeight, 'F');
       
-      // Outer border - thick black
-      pdf.setDrawColor(0, 0, 0);
-      pdf.setLineWidth(2);
-      pdf.rect(20, contentStartY, contentWidth, contentHeight);
-      
-      // Inner border - thin black
-      pdf.setDrawColor(0, 0, 0);
+      // Content border
+      pdf.setDrawColor(...darkGray);
       pdf.setLineWidth(1);
-      pdf.rect(25, contentStartY + 5, contentWidth - 10, contentHeight - 10);
+      pdf.rect(margin, contentY, pageWidth - (margin * 2), contentHeight);
       
-      // Two-column layout
-      const leftColumnX = 35;
-      const rightColumnX = pageWidth / 2 + 10;
+      // Define column dimensions
+      const columnWidth = (pageWidth - (margin * 4) - 10) / 2; // 10mm gap between columns
+      const leftColumnX = margin + 10;
+      const rightColumnX = leftColumnX + columnWidth + 10;
       
-      // Left Column - Participant Details
-      let currentY = contentStartY + 20;
+      // LEFT COLUMN - Participant & Event Details
+      let currentY = contentY + 15;
       
-      // Participant Details Header
-      pdf.setFillColor(0, 0, 0);
-      pdf.rect(leftColumnX - 5, currentY - 8, 120, 12, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('PARTICIPANT DETAILS', leftColumnX, currentY);
+      // Helper function to create section headers
+      const createSectionHeader = (text: string, x: number, y: number, width: number) => {
+        pdf.setFillColor(...primaryColor);
+        pdf.rect(x, y - 6, width, 10, 'F');
+        pdf.setTextColor(...white);
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(text, x + 5, y);
+        return y + 12; // Return next line position
+      };
       
-      // Reset text color
-      pdf.setTextColor(0, 0, 0);
-      currentY += 20;
+      // Helper function to add labeled info
+      const addLabeledInfo = (label: string, value: string, x: number, y: number, maxValueWidth: number = 120) => {
+        pdf.setTextColor(...darkGray);
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(label + ':', x, y);
+        
+        pdf.setTextColor(...black);
+        pdf.setFont('helvetica', 'normal');
+        
+        // Handle long text by wrapping
+        const words = value.split(' ');
+        let line = '';
+        const lines = [];
+        
+        for (const word of words) {
+          const testLine = line + (line ? ' ' : '') + word;
+          const testWidth = pdf.getTextWidth(testLine);
+          
+          if (testWidth > maxValueWidth && line) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line) lines.push(line);
+        
+        let lineY = y;
+        for (const textLine of lines) {
+          pdf.text(textLine, x + labelWidth, lineY);
+          lineY += 5;
+        }
+        
+        return lineY + 2; // Return next line position
+      };
       
-      // Participant Info
-      pdf.setFontSize(12);
+      // Participant Details Section
+      currentY = createSectionHeader('PARTICIPANT DETAILS', leftColumnX, currentY, columnWidth);
       
-      // Name
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Name:', leftColumnX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(ticketData.participant.name, leftColumnX + 25, currentY);
-      currentY += 10;
+      currentY = addLabeledInfo('Full Name', ticketData.participant.name, leftColumnX + 5, currentY);
+      currentY = addLabeledInfo('Email Address', ticketData.participant.email, leftColumnX + 5, currentY);
+      currentY = addLabeledInfo('Registration ID', ticketData.participant.registrationId, leftColumnX + 5, currentY);
       
-      // Email
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Email:', leftColumnX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(ticketData.participant.email, leftColumnX + 25, currentY);
-      currentY += 10;
+      currentY += sectionSpacing;
       
-      // Registration ID
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Registration ID:', leftColumnX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(ticketData.participant.registrationId, leftColumnX + 50, currentY);
-      currentY += 20;
+      // Event Details Section
+      currentY = createSectionHeader('EVENT DETAILS', leftColumnX, currentY, columnWidth);
       
-      // Event Details Header
-      pdf.setFillColor(0, 0, 0);
-      pdf.rect(leftColumnX - 5, currentY - 8, 120, 12, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('EVENT DETAILS', leftColumnX, currentY);
-      
-      // Reset text color
-      pdf.setTextColor(0, 0, 0);
-      currentY += 20;
-      
-      // Event Info
-      pdf.setFontSize(12);
-      
-      // Date
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Date:', leftColumnX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      const eventDate = new Date(ticketData.event.date).toLocaleDateString('en-US', {
+      // Format date nicely
+      const eventDate = new Date(ticketData.event.date);
+      const formattedDate = eventDate.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
       });
-      pdf.text(eventDate, leftColumnX + 25, currentY);
-      currentY += 10;
+      const formattedTime = eventDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
       
-      // Venue
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Venue:', leftColumnX, currentY);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(ticketData.event.venue, leftColumnX + 25, currentY);
-      currentY += 10;
+      currentY = addLabeledInfo('Date', formattedDate, leftColumnX + 5, currentY);
+      currentY = addLabeledInfo('Time', formattedTime, leftColumnX + 5, currentY);
+      currentY = addLabeledInfo('Venue', ticketData.event.venue, leftColumnX + 5, currentY);
       
-      // Description (if not too long)
-      if (ticketData.event.description && ticketData.event.description.length < 80) {
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Description:', leftColumnX, currentY);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(ticketData.event.description, leftColumnX + 35, currentY);
+      if (ticketData.event.description) {
+        currentY = addLabeledInfo('Description', ticketData.event.description, leftColumnX + 5, currentY, 100);
       }
       
-      // Right Column - QR Code Section
-      const qrSectionY = contentStartY + 20;
-      const qrSize = 70;
-      const qrX = rightColumnX + (contentWidth / 2 - qrSize) / 2;
-      const qrY = qrSectionY + 20;
+      // RIGHT COLUMN - QR Code Section
+      const qrSectionY = contentY + 15;
+      const qrSize = 40;
+      const qrX = rightColumnX + (columnWidth - qrSize) / 2;
+      let qrCurrentY = qrSectionY;
       
-      // QR Code Header
-      pdf.setFillColor(0, 0, 0);
-      pdf.rect(rightColumnX - 5, qrSectionY - 8, contentWidth / 2 - 10, 12, 'F');
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('CHECK-IN QR CODE', rightColumnX, qrSectionY);
+      // QR Section Header
+      qrCurrentY = createSectionHeader('CHECK-IN QR CODE', rightColumnX, qrCurrentY, columnWidth);
+      qrCurrentY += 10;
       
-      // Reset text color
-      pdf.setTextColor(0, 0, 0);
+      // QR Code container with nice styling
+      pdf.setFillColor(...white);
+      pdf.rect(qrX - 10, qrCurrentY - 10, qrSize + 20, qrSize + 20, 'F');
       
-      // QR Code Border - thick black
-      pdf.setDrawColor(0, 0, 0);
-      pdf.setLineWidth(3);
-      pdf.rect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16);
+      pdf.setDrawColor(...primaryColor);
+      pdf.setLineWidth(2);
+      pdf.rect(qrX - 10, qrCurrentY - 10, qrSize + 20, qrSize + 20);
       
-      // Add QR code image
+      pdf.setDrawColor(...lightGray);
+      pdf.setLineWidth(1);
+      pdf.rect(qrX - 5, qrCurrentY - 5, qrSize + 10, qrSize + 10);
+      
+      // Add QR code
       const qrCodeImage = `data:image/png;base64,${ticketData.qrCodeData}`;
-      pdf.addImage(qrCodeImage, 'PNG', qrX, qrY, qrSize, qrSize);
+      pdf.addImage(qrCodeImage, 'PNG', qrX, qrCurrentY, qrSize, qrSize);
       
-      // QR Code Instructions
+      // QR Instructions
+      const instructionY = qrCurrentY + qrSize + 25;
+      pdf.setTextColor(...darkGray);
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Present this QR code at the event', rightColumnX + 20, qrY + qrSize + 20, { align: 'center' });
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('for instant check-in', rightColumnX + 20, qrY + qrSize + 30, { align: 'center' });
+      pdf.text('Present this QR code for', rightColumnX + columnWidth / 2, instructionY, { align: 'center' });
+      pdf.text('instant check-in at the event', rightColumnX + columnWidth / 2, instructionY + 6, { align: 'center' });
       
-      // Ticket Number/ID at bottom
-      const ticketIdY = contentStartY + contentHeight - 25;
+      // TICKET ID BAR AT BOTTOM
+      const ticketBarY = contentY + contentHeight - 25;
+      pdf.setFillColor(...darkGray);
+      pdf.rect(margin + 10, ticketBarY, pageWidth - (margin * 2) - 20, 15, 'F');
+      
+      pdf.setTextColor(...white);
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(`Ticket ID: ${ticketData.participant.registrationId}`, pageWidth / 2, ticketIdY, { align: 'center' });
+      pdf.text(`TICKET ID: ${ticketData.participant.registrationId}`, pageWidth / 2, ticketBarY + 9, { align: 'center' });
       
-      // Footer
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('Generated by STAMPED Event Management System', pageWidth / 2, pageHeight - 20, { align: 'center' });
+      // FOOTER
+      const footerY = pageHeight - 10;
+      pdf.setTextColor(...darkGray);
       pdf.setFontSize(8);
-      pdf.text(new Date().toLocaleString(), pageWidth / 2, pageHeight - 12, { align: 'center' });
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Generated by STAMPED Event Management System', margin, footerY);
+      
+      const generatedTime = new Date().toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      pdf.text(`Generated: ${generatedTime}`, pageWidth - margin, footerY, { align: 'right' });
       
       // Download the PDF
-      pdf.save(`${ticketData.event.title.replace(/[^a-z0-9]/gi, '_')}-ticket.pdf`);
+      const fileName = `${ticketData.event.title.replace(/[^a-z0-9]/gi, '_')}_ticket_${ticketData.participant.registrationId}.pdf`;
+      pdf.save(fileName);
       
     } catch (error) {
       console.error('Ticket generation failed:', error);
-      throw error; // Re-throw to allow error handling in parent component
+      throw error;
     }
   };
 
@@ -218,7 +260,7 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
     generateAndDownloadTicket
   }));
 
-  return null; // This component doesn't render anything visible
+  return null;
 });
 
 TicketGenerator.displayName = 'TicketGenerator';
