@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Download, FileText } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Download, FileText, QrCode } from 'lucide-react';
 import toast from 'react-hot-toast';
-import TicketGenerator from '@/components/TicketGenerator';
+import TicketGenerator, { TicketGeneratorRef } from '@/components/TicketGenerator';
 
 interface Event {
   _id: string;
@@ -37,10 +37,14 @@ export default function ThankYouPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = params.id as string;
+  const ticketGeneratorRef = useRef<TicketGeneratorRef>(null);
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
+  const [isGeneratingTicket, setIsGeneratingTicket] = useState(false);
+  const [ticketDownloaded, setTicketDownloaded] = useState(false);
+  const [ticketDownloadFailed, setTicketDownloadFailed] = useState(false);
 
   useEffect(() => {
     // Get registration data from URL params
@@ -85,18 +89,47 @@ export default function ThankYouPage() {
     }
   }, [eventId, searchParams, router]);
 
+  // Auto-download ticket when registration data is available
+  useEffect(() => {
+    if (registrationData && ticketGeneratorRef.current && !ticketDownloaded && !ticketDownloadFailed) {
+      const autoDownloadTicket = async () => {
+        try {
+          setIsGeneratingTicket(true);
+          await ticketGeneratorRef.current!.generateAndDownloadTicket();
+          setTicketDownloaded(true);
+          toast.success('Ticket downloaded automatically!');
+        } catch (error) {
+          console.error('Auto ticket download failed:', error);
+          setTicketDownloadFailed(true);
+          toast.error('Auto-download failed. Please try manually.');
+        } finally {
+          setIsGeneratingTicket(false);
+        }
+      };
 
-  const handleDownloadTicket = () => {
-    if (registrationData) {
-      // Trigger ticket generation
-      const ticketGenerator = document.createElement('div');
-      ticketGenerator.innerHTML = '<div id="ticket-trigger"></div>';
-      document.body.appendChild(ticketGenerator);
-      
-      // Remove after a moment
-      setTimeout(() => {
-        document.body.removeChild(ticketGenerator);
-      }, 100);
+      // Small delay to ensure component is fully mounted
+      const timer = setTimeout(autoDownloadTicket, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [registrationData, ticketDownloaded, ticketDownloadFailed]);
+
+
+  const handleDownloadTicket = async () => {
+    if (!ticketGeneratorRef.current || !registrationData) {
+      toast.error('Ticket data not available');
+      return;
+    }
+
+    try {
+      setIsGeneratingTicket(true);
+      await ticketGeneratorRef.current.generateAndDownloadTicket();
+      setTicketDownloaded(true);
+      toast.success('Ticket downloaded successfully!');
+    } catch (error) {
+      console.error('Ticket generation failed:', error);
+      toast.error('Failed to generate ticket. Please try again.');
+    } finally {
+      setIsGeneratingTicket(false);
     }
   };
 
@@ -154,30 +187,44 @@ export default function ThankYouPage() {
           {/* Success Message */}
           <div className="bg-card rounded-lg shadow-md p-6 sm:p-8 text-center border mb-8">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Registration Successful!</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Thank You for Registering!</h1>
             <p className="text-base sm:text-lg text-muted-foreground mb-6">
-              Thank you for registering for <strong>{event.title}</strong>. 
-              Your registration has been confirmed.
+              Your registration for <strong>{event.title}</strong> has been confirmed. 
+              We're excited to see you at the event!
             </p>
             
             <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-center mb-2">
-                <FileText className="h-5 w-5 text-primary mr-2" />
-                <span className="text-primary font-medium">Your Ticket</span>
+                <QrCode className="h-5 w-5 text-primary mr-2" />
+                <span className="text-primary font-medium">Your Digital Ticket</span>
               </div>
               <p className="text-primary text-sm">
-                Download your personalized event ticket with QR code below.
+                Download your personalized ticket with QR code for easy check-in at the event.
               </p>
             </div>
 
             {/* Download Button */}
             <button
               onClick={handleDownloadTicket}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 transition-colors mb-6"
+              disabled={isGeneratingTicket}
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mb-6"
             >
-              <Download className="h-5 w-5 mr-2" />
-              Download Ticket
+              {isGeneratingTicket ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-2"></div>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Download className="h-5 w-5 mr-2" />
+                  Download Your Ticket
+                </>
+              )}
             </button>
+            
+            <p className="text-xs text-muted-foreground">
+              The ticket will be automatically downloaded to your device
+            </p>
           </div>
 
           {/* Event Details */}
@@ -251,22 +298,34 @@ export default function ThankYouPage() {
           {/* Next Steps */}
           <div className="bg-muted/50 border border-border rounded-lg p-6">
             <h3 className="text-lg font-medium text-foreground mb-4">What happens next?</h3>
-            <ul className="space-y-2 text-muted-foreground">
+            <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start">
-                <span className="text-primary mr-2">•</span>
-                <span>Download and save your ticket to your device</span>
+                <CheckCircle className="h-4 w-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-medium text-foreground">Download your ticket</span>
+                  <p className="text-sm">Click the button above to download your personalized PDF ticket</p>
+                </div>
               </li>
               <li className="flex items-start">
-                <span className="text-primary mr-2">•</span>
-                <span>Bring the QR code to the event for easy check-in</span>
+                <QrCode className="h-4 w-4 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-medium text-foreground">Bring your QR code</span>
+                  <p className="text-sm">Present the QR code on your ticket at the event for instant check-in</p>
+                </div>
               </li>
               <li className="flex items-start">
-                <span className="text-primary mr-2">•</span>
-                <span>Your attendance will be automatically tracked</span>
+                <Users className="h-4 w-4 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-medium text-foreground">Automatic attendance tracking</span>
+                  <p className="text-sm">Your attendance will be automatically recorded when you check in</p>
+                </div>
               </li>
               <li className="flex items-start">
-                <span className="text-primary mr-2">•</span>
-                <span>Keep your registration ID for reference</span>
+                <FileText className="h-4 w-4 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-medium text-foreground">Keep your registration details</span>
+                  <p className="text-sm">Save your registration ID for any future reference or support</p>
+                </div>
               </li>
             </ul>
           </div>
@@ -289,9 +348,10 @@ export default function ThankYouPage() {
         </div>
       </main>
 
-      {/* Auto-generate ticket when component mounts */}
+      {/* Ticket Generator Component */}
       {registrationData && (
         <TicketGenerator
+          ref={ticketGeneratorRef}
           ticketData={{
             participant: {
               name: registrationData.name,
