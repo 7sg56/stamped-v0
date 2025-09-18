@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import EventCard from '@/components/EventCard';
+import { PageLoading } from '@/components/ui/loading';
 
 interface Event {
   _id: string;
@@ -80,14 +81,7 @@ export default function EventsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading events...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading text="LOADING" />;
   }
 
   return (

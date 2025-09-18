@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Download, FileText, QrCode } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TicketGenerator, { TicketGeneratorRef } from '@/components/TicketGenerator';
+import { PageLoading } from '@/components/ui/loading';
 
 interface Event {
   _id: string;
@@ -172,15 +173,7 @@ export default function ThankYouPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container py-8 sm:py-12">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoading text="LOADING" />;
   }
 
   if (!event || !registrationData) {

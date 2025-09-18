@@ -48,3 +48,5 @@ coverage/
 *.tar.gz
 *.rar
 *.7z
+
+loading-test/

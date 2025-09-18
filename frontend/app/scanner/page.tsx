@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, QrCode, CheckCircle, XCircle, Camera, CameraOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import QrScanner from 'qr-scanner';
+import { OverlayLoading } from '@/components/ui/loading';
 
 interface AttendanceResult {
   success: boolean;
@@ -284,17 +285,7 @@ export default function ScannerPage() {
             )}
 
             {isProcessing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-                <div className="text-center text-primary-foreground">
-                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary-foreground mx-auto mb-2"></div>
-                  <p className="text-sm sm:text-base">Processing QR code...</p>
-                  {qrCodePreview && (
-                    <p className="text-xs text-muted-foreground mt-2 font-mono px-2">
-                      {qrCodePreview.substring(0, 30)}...
-                    </p>
-                  )}
-                </div>
-              </div>
+              <OverlayLoading text="LOADING" />
             )}
           </div>
 

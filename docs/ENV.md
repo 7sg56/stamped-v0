@@ -110,11 +110,6 @@ ADMIN_PASSWORD=your-secure-admin-password
 - Ensure backend is running on correct port
 - Verify CORS settings in backend
 
-**Email not sending**
-- Verify email credentials
-- Check if 2FA is enabled (use app password)
-- Test with a simple email service first
-
 **Database connection failed**
 - Check MongoDB is running
 - Verify connection string format
