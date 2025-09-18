@@ -6,6 +6,7 @@ const apiRoutes = require("./routes");
 const errorHandler = require("./middleware/errorHandler");
 const { errorLogger, requestLogger, performanceMonitor, requestId } = require("./middleware/requestLogger");
 const { startEventCleanupTask } = require("./utils/eventCleanup");
+const Admin = require("./models/Admin");
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -110,4 +111,13 @@ app.listen(PORT, () => {
   
   // Start event cleanup task
   startEventCleanupTask();
+  
+  // Create superadmin user on startup
+  console.log('🔍 Environment check:');
+  console.log('SUPERADMIN_USERNAME:', process.env.SUPERADMIN_USERNAME ? 'SET' : 'NOT SET');
+  console.log('SUPERADMIN_PASSWORD:', process.env.SUPERADMIN_PASSWORD ? 'SET' : 'NOT SET');
+  
+  Admin.createSuperAdmin().catch(err => {
+    console.error('Error creating superadmin user:', err);
+  });
 });

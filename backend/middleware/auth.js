@@ -36,9 +36,16 @@ const verifyToken = async (req, res, next) => {
 
     // Verify JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('🔍 JWT decoded:', decoded);
     
     // Fetch admin user from database to ensure they still exist
     const admin = await Admin.findById(decoded.id);
+    console.log('🔍 Admin from DB:', admin ? 'Found' : 'Not found');
+    if (admin) {
+      console.log('🔍 Admin role from DB:', admin.role);
+      console.log('🔍 Admin object keys:', Object.keys(admin.toObject()));
+      console.log('🔍 Admin raw object:', admin.toObject());
+    }
     
     if (!admin) {
       return res.status(401).json({
@@ -48,12 +55,19 @@ const verifyToken = async (req, res, next) => {
     }
 
     // Attach admin user to request object
+    console.log('🔍 Setting req.user with role:', admin.role);
+    console.log('🔍 isSuperAdmin result:', admin.isSuperAdmin());
+    
     req.user = {
       id: admin._id.toString(),
       username: admin.username,
+      role: admin.role,
+      isSuperAdmin: admin.isSuperAdmin(),
       createdAt: admin.createdAt
     };
     req.admin = admin; // Also attach full admin object for backward compatibility
+    
+    console.log('🔍 Final req.user:', req.user);
     
     next();
   } catch (error) {

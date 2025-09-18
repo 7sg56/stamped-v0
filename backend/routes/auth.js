@@ -23,6 +23,12 @@ router.post('/login', async (req, res) => {
 
     // Find admin by username
     const admin = await Admin.findOne({ username });
+    console.log('🔍 Login attempt for username:', username);
+    console.log('🔍 Admin found:', admin ? 'YES' : 'NO');
+    if (admin) {
+      console.log('🔍 Admin role:', admin.role);
+    }
+    
     if (!admin) {
       return res.status(401).json({
         success: false,
@@ -31,7 +37,10 @@ router.post('/login', async (req, res) => {
     }
 
     // Check password
+    console.log('🔍 Checking password for admin:', admin.username);
     const isPasswordValid = await admin.comparePassword(password);
+    console.log('🔍 Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -41,7 +50,7 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: admin._id.toString(), username: admin.username },
+      { id: admin._id.toString(), username: admin.username, role: admin.role },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -52,7 +61,9 @@ router.post('/login', async (req, res) => {
       token,
       admin: {
         id: admin._id.toString(),
-        username: admin.username
+        username: admin.username,
+        role: admin.role,
+        isSuperAdmin: admin.isSuperAdmin()
       }
     });
   } catch (error) {
@@ -97,6 +108,15 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Prevent registration of hardcoded superadmin username
+    const superAdminUsername = process.env.SUPERADMIN_USERNAME;
+    if (superAdminUsername && username.toLowerCase() === superAdminUsername.toLowerCase()) {
+      return res.status(403).json({
+        success: false,
+        message: 'This username is reserved for system administrators'
+      });
+    }
+
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ username });
     if (existingAdmin) {
@@ -106,10 +126,11 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Create new admin
+    // Create new admin (explicitly set role to 'admin', never 'superadmin')
     const admin = new Admin({
       username: username.trim(),
-      passwordHash: password // Will be hashed by the pre-save middleware
+      passwordHash: password, // Will be hashed by the pre-save middleware
+      role: 'admin' // Always 'admin' for registered users, never 'superadmin'
     });
 
     await admin.save();

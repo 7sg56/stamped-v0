@@ -25,8 +25,19 @@ router.get('/', async (req, res) => {
         const admin = await Admin.findById(decoded.id);
         if (admin) {
           isAdminUser = true;
-          req.user = { id: admin._id, username: admin.username };
+          console.log('🔍 Events API - Admin found in manual auth:', admin.username);
+          console.log('🔍 Events API - Admin role from DB:', admin.role);
+          console.log('🔍 Events API - isSuperAdmin result:', admin.isSuperAdmin());
+          
+          req.user = { 
+            id: admin._id, 
+            username: admin.username,
+            role: admin.role,
+            isSuperAdmin: admin.isSuperAdmin()
+          };
           req.admin = admin;
+          
+          console.log('🔍 Events API - req.user set to:', req.user);
         }
       } catch (error) {
         // Invalid token, continue as public user
@@ -47,12 +58,41 @@ router.get('/', async (req, res) => {
     );
 
     if (isAdminUser) {
-      // Admin view: return only events created by this admin with participant counts and stats
-      const events = await Event.find({ organizer: req.user.id })
-        .populate('participants', 'attended')
-        .populate('organizer', 'username')
-        .sort({ date: 1 })
-        .lean();
+      // Check if user is superadmin
+      const isSuperAdmin = req.user && req.user.isSuperAdmin;
+      
+      console.log('🔍 Events API - Admin user:', req.user.username);
+      console.log('🔍 Events API - User role:', req.user.role);
+      console.log('🔍 Events API - Is superadmin:', isSuperAdmin);
+      
+      let events;
+      if (isSuperAdmin) {
+        console.log('🔍 Events API - Fetching ALL events for superadmin');
+        // Superadmin view: return ALL events with participant counts and stats
+        events = await Event.find({})
+          .populate('participants', 'attended')
+          .populate('organizer', 'username')
+          .sort({ date: 1 })
+          .lean();
+      } else {
+        console.log('🔍 Events API - Fetching events for regular admin:', req.user.id);
+        // Regular admin view: return only events created by this admin with participant counts and stats
+        events = await Event.find({ organizer: req.user.id })
+          .populate('participants', 'attended')
+          .populate('organizer', 'username')
+          .sort({ date: 1 })
+          .lean();
+      }
+      
+      console.log('🔍 Events API - Found events:', events.length);
+      
+      // Debug: Show event details
+      if (events.length > 0) {
+        console.log('🔍 Events API - Event organizers:');
+        events.forEach((event, index) => {
+          console.log(`  Event ${index + 1}: ${event.title} - Organizer: ${event.organizer?.username || 'Unknown'}`);
+        });
+      }
 
       // Add virtual fields for each event
       const eventsWithStats = events.map(event => {

@@ -27,11 +27,16 @@ interface Event {
   participantCount: number;
   attendedCount: number;
   isActive: boolean;
+  organizer?: {
+    username: string;
+  };
 }
 
 interface AdminUser {
   id: string;
   username: string;
+  role?: string;
+  isSuperAdmin?: boolean;
 }
 
 export default function AdminDashboard() {
@@ -173,6 +178,11 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between sm:space-x-4">
               <span className="text-xs sm:text-sm text-muted-foreground">
                 Welcome, <strong className="text-foreground">{adminUser?.username}</strong>
+                {adminUser?.isSuperAdmin && (
+                  <span className="ml-2 px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full font-semibold">
+                    SUPERADMIN
+                  </span>
+                )}
               </span>
               <button
                 onClick={handleLogout}
@@ -198,7 +208,14 @@ export default function AdminDashboard() {
               
               return (
                 <div key={event._id} className="bg-card rounded-lg border p-3 sm:p-4">
-                  <h3 className="text-base sm:text-lg font-medium text-foreground mb-3 truncate">{event.title}</h3>
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-base sm:text-lg font-medium text-foreground truncate">{event.title}</h3>
+                    {adminUser?.isSuperAdmin && event.organizer && (
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                        by {event.organizer.username}
+                      </span>
+                    )}
+                  </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs sm:text-sm text-muted-foreground">Registrations:</span>
