@@ -17,11 +17,11 @@
     }
   },
   "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+    "NEXT_PUBLIC_API_URL": "https://stamped-v0.onrender.com/api"
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+      "NEXT_PUBLIC_API_URL": "https://stamped-v0.onrender.com/api"
     }
   }
 }

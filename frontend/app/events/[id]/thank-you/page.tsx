@@ -254,7 +254,7 @@ export default function ThankYouPage() {
             </button>
             
             <p className="text-xs text-muted-foreground">
-              The ticket will be automatically downloaded to your device
+              The ticket will be automatically downloaded to your device, if not, please click the button above.
             </p>
           </div>
 
