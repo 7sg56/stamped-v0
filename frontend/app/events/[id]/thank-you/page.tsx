@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Download, FileText, QrCode } from 'lucide-react';
@@ -47,38 +47,7 @@ export default function ThankYouPage() {
   const [ticketDownloaded, setTicketDownloaded] = useState(false);
   const [ticketDownloadFailed, setTicketDownloadFailed] = useState(false);
 
-  useEffect(() => {
-    // Get registration data from URL params
-    const name = searchParams.get('name');
-    const email = searchParams.get('email');
-    const registrationId = searchParams.get('registrationId');
-    const eventTitle = searchParams.get('eventTitle');
-    const eventDate = searchParams.get('eventDate');
-    const venue = searchParams.get('venue');
-    const description = searchParams.get('description');
-    const qrCodeData = searchParams.get('qrCodeData');
-
-    if (name && email && registrationId && eventTitle && eventDate && venue && qrCodeData) {
-      setRegistrationData({
-        name,
-        email,
-        registrationId,
-        eventTitle,
-        eventDate,
-        venue,
-        description: description || '',
-        qrCodeData
-      });
-      
-      // Fetch actual event data to get updated participant count
-      fetchEventData();
-    } else {
-      toast.error('Invalid registration data');
-      router.push('/events');
-    }
-  }, [eventId, searchParams, router]);
-
-  const fetchEventData = async () => {
+  const fetchEventData = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`);
       const data = await response.json();
@@ -126,7 +95,38 @@ export default function ThankYouPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId, searchParams]);
+
+  useEffect(() => {
+    // Get registration data from URL params
+    const name = searchParams.get('name');
+    const email = searchParams.get('email');
+    const registrationId = searchParams.get('registrationId');
+    const eventTitle = searchParams.get('eventTitle');
+    const eventDate = searchParams.get('eventDate');
+    const venue = searchParams.get('venue');
+    const description = searchParams.get('description');
+    const qrCodeData = searchParams.get('qrCodeData');
+
+    if (name && email && registrationId && eventTitle && eventDate && venue && qrCodeData) {
+      setRegistrationData({
+        name,
+        email,
+        registrationId,
+        eventTitle,
+        eventDate,
+        venue,
+        description: description || '',
+        qrCodeData
+      });
+      
+      // Fetch actual event data to get updated participant count
+      fetchEventData();
+    } else {
+      toast.error('Invalid registration data');
+      router.push('/events');
+    }
+  }, [eventId, searchParams, router, fetchEventData]);
 
   // Auto-download ticket when registration data is available
   useEffect(() => {

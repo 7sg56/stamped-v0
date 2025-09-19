@@ -13,13 +13,20 @@ const router = express.Router();
  */
 router.post('/mark', auth, async (req, res) => {
   try {
-    const { qrData } = req.body;
+    const { qrData, expectedEventId } = req.body;
 
     // Validate input
     if (!qrData) {
       return res.status(400).json({
         success: false,
         message: 'QR code data is required'
+      });
+    }
+
+    if (!expectedEventId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Expected event ID is required'
       });
     }
 
@@ -41,6 +48,26 @@ router.post('/mark', auth, async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Invalid event ID in QR code'
+      });
+    }
+
+    // Validate expectedEventId format
+    if (!mongoose.Types.ObjectId.isValid(expectedEventId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid expected event ID'
+      });
+    }
+
+    // CRITICAL SECURITY CHECK: Ensure QR code is for the expected event
+    if (eventId !== expectedEventId) {
+      return res.status(400).json({
+        success: false,
+        message: `This QR code is for a different event. Please scan a QR code for this event only.`,
+        data: {
+          scannedEventId: eventId,
+          expectedEventId: expectedEventId
+        }
       });
     }
 

@@ -14,26 +14,12 @@ interface LoadingProps {
   estimatedDuration?: number; // Custom estimated duration in milliseconds
 }
 
-const sizeClasses = {
-  sm: 'h-4 w-4',
-  md: 'h-6 w-6',
-  lg: 'h-8 w-8',
-  xl: 'h-12 w-12'
-};
-
-const textSizes = {
-  sm: 'text-xs',
-  md: 'text-sm',
-  lg: 'text-base',
-  xl: 'text-lg'
-};
 
 // Custom loading animation with blinking dots and progress bar
 function CustomLoadingAnimation({ text = 'LOADING', progress = 0, onComplete, estimatedDuration }: { text?: string; progress?: number; onComplete?: () => void; estimatedDuration?: number }) {
   const [dotCount, setDotCount] = useState(0);
   const [realProgress, setRealProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -47,7 +33,6 @@ function CustomLoadingAnimation({ text = 'LOADING', progress = 0, onComplete, es
   useEffect(() => {
     if (!isComplete) {
       const now = Date.now();
-      setStartTime(now);
       const duration = estimatedDuration || 15000; // Default 15 seconds
       
       const progressInterval = setInterval(() => {
@@ -112,10 +97,8 @@ function CustomLoadingAnimation({ text = 'LOADING', progress = 0, onComplete, es
 }
 
 export function Loading({ 
-  size = 'lg', 
   text, 
   fullScreen = false, 
-  className,
   variant = 'default',
   progress,
   onComplete,
@@ -236,7 +219,7 @@ export const LOADING_DURATIONS = {
 } as const;
 
 // Smart duration selection based on operation type
-export const getLoadingDuration = (operation: string, context?: any): number => {
+export const getLoadingDuration = (operation: string, context?: { isQuickOperation?: boolean; isFirstLoad?: boolean; isColdStart?: boolean; isHeavyOperation?: boolean }): number => {
   const operationLower = operation.toLowerCase();
   
   // Check for cold start first - this is the main issue
@@ -291,7 +274,7 @@ export const getContextualDuration = (context: {
   isHeavyOperation?: boolean;
   isQuickOperation?: boolean;
 }): number => {
-  const { operation, isFirstLoad, isColdStart, isHeavyOperation, isQuickOperation } = context;
+  const { isFirstLoad, isColdStart, isHeavyOperation } = context;
   
   // Cold start is the main issue - everything else is fast
   if (isFirstLoad || isColdStart) return LOADING_DURATIONS.RENDER_COLD;

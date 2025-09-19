@@ -181,7 +181,7 @@ const TicketGenerator = forwardRef<TicketGeneratorRef, TicketGeneratorProps>(({ 
       currentY = addLabeledInfo('Venue', ticketData.event.venue, leftColumnX + 5, currentY);
       
       if (ticketData.event.description) {
-        currentY = addLabeledInfo('Description', ticketData.event.description, leftColumnX + 5, currentY, 100);
+        addLabeledInfo('Description', ticketData.event.description, leftColumnX + 5, currentY, 100);
       }
       
       // RIGHT COLUMN - QR Code Section

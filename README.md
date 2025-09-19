@@ -25,14 +25,13 @@
 - **Event Management** - Create and manage events with full CRUD operations
 - **QR Code Attendance** - Real-time QR code scanning for instant check-ins
 - **Admin Dashboard** - Comprehensive analytics and event management
+- **SuperAdmin Dashboard** - Admins but with super powers to view/edit all events
 - **Digital Tickets** - Professional PDF ticket generation with QR codes
 - **Data Export** - Export attendance data as CSV/Excel files
 - **Responsive Design** - Mobile-first design that works on all devices
 
 ### 🚧 Planned Features
 
-- **Super Admin Route** - Access to all events across the platform with centralized management
-- **Account Verification System** - Super admin approval process for new accounts before they can publish events
 - **Enhanced Event Media** - Image carousels and video playback in event cards and detail pages
 - **Advanced Analytics** - Improved reporting and insights dashboard
 - **Billing & Subscriptions** - Usage-based pricing and subscription management
