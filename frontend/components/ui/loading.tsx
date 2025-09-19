@@ -43,44 +43,46 @@ function CustomLoadingAnimation({ text = 'LOADING', progress = 0, onComplete, es
     return () => clearInterval(interval);
   }, []);
 
-  // Real progress simulation based on actual time elapsed
+  // Simplified progress simulation - always fills completely
   useEffect(() => {
-    if (progress === 0 && !isComplete) {
+    if (!isComplete) {
       const now = Date.now();
       setStartTime(now);
-      const duration = estimatedDuration || 20000; // Default 20 seconds for faster progress
+      const duration = estimatedDuration || 15000; // Default 15 seconds
       
       const progressInterval = setInterval(() => {
         const elapsed = Date.now() - now;
-        const timeLeft = Math.max(0, duration - elapsed);
-        const calculatedProgress = Math.min((elapsed / duration) * 100, 95); // Cap at 95% until real completion
+        const calculatedProgress = Math.min((elapsed / duration) * 100, 100); // Always reach 100%
         
         setRealProgress(calculatedProgress);
         
-        // Stop at 95% to wait for actual completion
-        if (calculatedProgress >= 95) {
+        // Auto-complete when duration is reached
+        if (calculatedProgress >= 100) {
+          setRealProgress(100);
+          setIsComplete(true);
+          if (onComplete) {
+            onComplete();
+          }
           clearInterval(progressInterval);
         }
-      }, 100); // Update every 100ms for faster, more responsive progress
+      }, 50); // Update every 50ms for smooth progress
       
       return () => clearInterval(progressInterval);
-    } else if (progress > 0) {
-      setRealProgress(progress);
     }
-  }, [progress, isComplete, estimatedDuration]);
+  }, [isComplete, estimatedDuration, onComplete]);
 
-  // Handle completion
+  // Handle external progress updates
   useEffect(() => {
-    if (onComplete && !isComplete) {
-      const timer = setTimeout(() => {
-        setRealProgress(100);
+    if (progress > 0) {
+      setRealProgress(progress);
+      if (progress >= 100) {
         setIsComplete(true);
-        onComplete();
-      }, 100);
-      
-      return () => clearTimeout(timer);
+        if (onComplete) {
+          onComplete();
+        }
+      }
     }
-  }, [onComplete, isComplete]);
+  }, [progress, onComplete]);
 
   const dots = '.'.repeat(dotCount);
   const progressBars = 14; // Number of rectangular bars
@@ -176,30 +178,39 @@ export function useLoadingWithProgress(estimatedDuration?: number) {
 
   const completeLoading = () => {
     setProgress(100);
+    // Ensure completion callback is called
     setTimeout(() => {
       setIsLoading(false);
       setProgress(0);
       setStartTime(null);
-    }, 500);
+    }, 200); // Shorter delay for faster completion
   };
 
   const updateProgress = (newProgress: number) => {
     setProgress(newProgress);
   };
 
-  // Auto-update progress based on time elapsed with adaptive speed
+  // Auto-update progress based on time elapsed - always completes
   useEffect(() => {
     if (isLoading && startTime) {
-      const duration = estimatedDuration || 20000; // Default 20 seconds for faster progress
+      const duration = estimatedDuration || 15000; // Default 15 seconds
       const interval = setInterval(() => {
         const elapsed = Date.now() - startTime;
-        const calculatedProgress = Math.min((elapsed / duration) * 100, 95);
+        const calculatedProgress = Math.min((elapsed / duration) * 100, 100); // Always reach 100%
         setProgress(calculatedProgress);
         
-        if (calculatedProgress >= 95) {
+        // Auto-complete when duration is reached
+        if (calculatedProgress >= 100) {
+          setProgress(100);
           clearInterval(interval);
+          // Auto-complete after reaching 100%
+          setTimeout(() => {
+            setIsLoading(false);
+            setProgress(0);
+            setStartTime(null);
+          }, 200);
         }
-      }, 100); // Update every 100ms for faster, more responsive progress
+      }, 50); // Update every 50ms for smooth progress
 
       return () => clearInterval(interval);
     }
@@ -216,8 +227,8 @@ export function useLoadingWithProgress(estimatedDuration?: number) {
 
 // Predefined durations for common operations
 export const LOADING_DURATIONS = {
-  FAST: 5000,      // 5 seconds - quick operations
-  NORMAL: 15000,    // 15 seconds - normal API calls
-  SLOW: 30000,      // 30 seconds - heavy operations
-  RENDER_COLD: 45000, // 45 seconds - Render.com cold starts
+  FAST: 3000,      // 3 seconds - quick operations
+  NORMAL: 8000,    // 8 seconds - normal API calls
+  SLOW: 15000,     // 15 seconds - heavy operations
+  RENDER_COLD: 20000, // 20 seconds - Render.com cold starts
 } as const;
