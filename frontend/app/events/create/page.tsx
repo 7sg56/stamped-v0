@@ -210,7 +210,7 @@ export default function CreateEventPage() {
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• The event will be visible on the public events page</li>
               <li>• Users can register for the event</li>
-              <li>• Registered users will receive QR codes via email</li>
+              <li>• Registered users will receive digital tickets with QR codes</li>
               <li>• You can track attendance and export data</li>
             </ul>
           </div>

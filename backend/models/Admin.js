@@ -55,22 +55,17 @@ adminSchema.pre('save', async function(next) {
   if (!this.isModified('passwordHash')) return next();
   
   try {
-    console.log('🔍 Hashing password for user:', this.username);
-    console.log('🔍 Password is already hashed:', this.passwordHash.match(/^\$2[aby]\$/) ? 'YES' : 'NO');
     
     // Only hash if it's not already hashed (for new passwords)
     // Check if it's already a bcrypt hash (starts with $2a$, $2b$, or $2y$)
     if (!this.passwordHash.match(/^\$2[aby]\$/)) {
-      console.log('🔍 Hashing new password...');
       const salt = await bcrypt.genSalt(12); // Increased salt rounds for better security
       this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
-      console.log('🔍 Password hashed successfully');
     } else {
-      console.log('🔍 Password already hashed, skipping...');
     }
     next();
   } catch (error) {
-    console.error('🔍 Error hashing password:', error);
+    console.error('Error hashing password:', error);
     next(error);
   }
 });
@@ -100,13 +95,8 @@ adminSchema.pre('save', async function(next) {
 // Compare password method
 adminSchema.methods.comparePassword = async function(candidatePassword) {
   try {
-    console.log('🔍 Comparing passwords:');
-    console.log('🔍 Candidate password:', candidatePassword);
-    console.log('🔍 Stored hash starts with:', this.passwordHash.substring(0, 10) + '...');
-    console.log('🔍 Hash length:', this.passwordHash.length);
     
     const result = await bcrypt.compare(candidatePassword, this.passwordHash);
-    console.log('🔍 Bcrypt comparison result:', result);
     return result;
   } catch (error) {
     console.error('🔍 Error in password comparison:', error);
@@ -116,9 +106,7 @@ adminSchema.methods.comparePassword = async function(candidatePassword) {
 
 // Check if admin is superadmin
 adminSchema.methods.isSuperAdmin = function() {
-  console.log('🔍 isSuperAdmin check - Role:', this.role);
   const result = this.role === 'superadmin';
-  console.log('🔍 isSuperAdmin result:', result);
   return result;
 };
 
@@ -135,41 +123,31 @@ adminSchema.statics.createSuperAdmin = async function() {
   const superAdminUsername = process.env.SUPERADMIN_USERNAME;
   const superAdminPassword = process.env.SUPERADMIN_PASSWORD;
 
-  console.log('🔍 Checking environment variables:');
-  console.log('SUPERADMIN_USERNAME:', superAdminUsername ? 'SET' : 'NOT SET');
-  console.log('SUPERADMIN_PASSWORD:', superAdminPassword ? 'SET' : 'NOT SET');
 
   // Only create superadmin if environment variables are set
   if (!superAdminUsername || !superAdminPassword) {
     console.log('⚠️  SUPERADMIN_USERNAME and SUPERADMIN_PASSWORD not set in environment variables');
-    console.log('Please add these to your .env file:');
-    console.log('SUPERADMIN_USERNAME=superadmin');
-    console.log('SUPERADMIN_PASSWORD=SuperAdmin123!');
     return;
   }
 
-  const existingAdmin = await this.findOne({ username: superAdminUsername });
-  console.log('🔍 Existing admin found:', existingAdmin ? 'YES' : 'NO');
-  
-  if (!existingAdmin) {
-    console.log('🔍 Creating new superadmin...');
-    const admin = new this({
-      username: superAdminUsername,
-      password: superAdminPassword,
-      role: 'superadmin'
-    });
-    await admin.save();
-    console.log(`✅ Created hardcoded superadmin: ${superAdminUsername}`);
-  } else {
-    console.log('🔍 Existing admin found, updating password...');
-    console.log('🔍 Current role:', existingAdmin.role);
-    
-    // Force update the password to ensure it matches the environment variable
-    existingAdmin.passwordHash = superAdminPassword; // This will trigger the pre-save hash
-    existingAdmin.role = 'superadmin';
-    await existingAdmin.save();
-    console.log(`✅ Updated superadmin password and role: ${superAdminUsername}`);
+  // Always delete existing superadmin first to ensure clean recreation
+  const deleteResult = await this.deleteOne({ username: superAdminUsername });
+  if (deleteResult.deletedCount > 0) {
+    console.log(`🗑️  Deleted existing superadmin: ${superAdminUsername}`);
   }
+  
+  // Create fresh superadmin with current environment variables
+  // Hash the password manually since we're setting passwordHash directly
+  const salt = await bcrypt.genSalt(12);
+  const hashedPassword = await bcrypt.hash(superAdminPassword, salt);
+  
+  const admin = new this({
+    username: superAdminUsername,
+    passwordHash: hashedPassword,
+    role: 'superadmin'
+  });
+  await admin.save();
+  console.log(`✅ Created fresh superadmin: ${superAdminUsername}`);
 };
 
 // Index for performance

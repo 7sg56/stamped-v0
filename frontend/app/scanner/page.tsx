@@ -131,13 +131,15 @@ export default function ScannerPage() {
 
       if (result.success) {
         setSuccessCount(prev => prev + 1);
-        toast.success(result.message);
-        // Auto-clear result after 5 seconds
-        setTimeout(() => {
-          setAttendanceResult(null);
-          setLastScannedCode(null);
-          setQrCodePreview(null);
-        }, 5000);
+        // Show enhanced toast with participant and event details
+        const participantName = result.data?.participant?.name || 'Participant';
+        const eventTitle = result.data?.event?.title || 'Event';
+        toast.success(`${participantName} successfully marked for ${eventTitle}!`);
+        
+        // Clear result immediately - no visual card needed
+        setAttendanceResult(null);
+        setLastScannedCode(null);
+        setQrCodePreview(null);
       } else {
         toast.error(result.message);
         // Clear error after 3 seconds
@@ -240,14 +242,7 @@ export default function ScannerPage() {
           <p className="text-sm sm:text-base text-muted-foreground px-4">
             Scan QR codes to mark attendance at events
           </p>
-          
-          {/* Testing Notice */}
-          <div className="mt-4 inline-flex items-center px-3 sm:px-4 py-2 bg-chart-1/10 border border-chart-1/20 rounded-lg">
-            <div className="w-2 h-2 bg-chart-1 rounded-full mr-2 animate-pulse"></div>
-            <span className="text-xs sm:text-sm text-chart-1 font-medium">Scanner in Testing Mode</span>
-          </div>
         </div>
-
         {/* Session Statistics */}
         {scanCount > 0 && (
           <div className="bg-card border rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
@@ -352,23 +347,17 @@ export default function ScannerPage() {
           </div>
         )}
 
-        {/* Results Section */}
-        {attendanceResult && (
+        {/* Results Section - Only show for errors, success is handled by toast */}
+        {attendanceResult && !attendanceResult.success && (
           <div className="bg-card border rounded-lg p-6">
             <div className="flex items-center mb-4">
-              {attendanceResult.success ? (
-                <CheckCircle className="h-8 w-8 text-chart-2 mr-3" />
-              ) : (
-                <XCircle className="h-8 w-8 text-destructive mr-3" />
-              )}
+              <XCircle className="h-8 w-8 text-destructive mr-3" />
               <h2 className="text-xl font-semibold text-card-foreground">
-                {attendanceResult.success ? 'Attendance Marked!' : 'Error'}
+                Error
               </h2>
             </div>
 
-            <p className={`text-lg mb-4 ${
-              attendanceResult.success ? 'text-chart-2' : 'text-destructive'
-            }`}>
+            <p className="text-lg mb-4 text-destructive">
               {attendanceResult.message}
             </p>
 
@@ -396,66 +385,6 @@ export default function ScannerPage() {
               </div>
             )}
 
-            {attendanceResult.success && attendanceResult.data && attendanceResult.data.participant && attendanceResult.data.event && (
-              <div className="space-y-6">
-                {/* Participant Information */}
-                <div className="bg-muted rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-card-foreground mb-3 flex items-center">
-                    <CheckCircle className="h-5 w-5 text-chart-2 mr-2" />
-                    Participant Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Full Name</p>
-                      <p className="font-semibold text-card-foreground text-lg">{attendanceResult.data.participant.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Email Address</p>
-                      <p className="font-medium text-card-foreground">{attendanceResult.data.participant.email}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Registration ID</p>
-                      <p className="font-mono text-sm text-primary bg-primary/10 px-2 py-1 rounded">{attendanceResult.data.participant.registrationId}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Attendance Time</p>
-                      <p className="font-medium text-chart-2">{formatDate(attendanceResult.data.participant.attendanceTime)}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Event Information */}
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-card-foreground mb-3 flex items-center">
-                    <QrCode className="h-5 w-5 text-primary mr-2" />
-                    Event Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Event Title</p>
-                      <p className="font-semibold text-card-foreground text-lg">{attendanceResult.data.event.title}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Event Date</p>
-                      <p className="font-medium text-card-foreground">{formatDate(attendanceResult.data.event.date)}</p>
-                    </div>
-                    <div className="md:col-span-2">
-                      <p className="text-sm text-muted-foreground">Venue</p>
-                      <p className="font-medium text-card-foreground">{attendanceResult.data.event.venue}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Success Message */}
-                <div className="bg-chart-2/10 border border-chart-2/20 rounded-lg p-4 text-center">
-                  <CheckCircle className="h-8 w-8 text-chart-2 mx-auto mb-2" />
-                  <p className="font-semibold text-chart-2">Attendance Successfully Recorded!</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {attendanceResult.data.participant.name} has been marked as present for {attendanceResult.data.event.title}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         )}
 

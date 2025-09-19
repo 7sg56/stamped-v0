@@ -23,11 +23,6 @@ router.post('/login', async (req, res) => {
 
     // Find admin by username
     const admin = await Admin.findOne({ username });
-    console.log('🔍 Login attempt for username:', username);
-    console.log('🔍 Admin found:', admin ? 'YES' : 'NO');
-    if (admin) {
-      console.log('🔍 Admin role:', admin.role);
-    }
     
     if (!admin) {
       return res.status(401).json({
@@ -37,9 +32,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Check password
-    console.log('🔍 Checking password for admin:', admin.username);
     const isPasswordValid = await admin.comparePassword(password);
-    console.log('🔍 Password valid:', isPasswordValid);
     
     if (!isPasswordValid) {
       return res.status(401).json({

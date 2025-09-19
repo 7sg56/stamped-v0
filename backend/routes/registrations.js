@@ -180,6 +180,14 @@ router.get('/event/:eventId', verifyToken, async (req, res) => {
       });
     }
 
+    // Check if user is superadmin or event owner
+    if (!req.user.isSuperAdmin && event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You can only view participants for your own events.'
+      });
+    }
+
     // Build query for participants
     let query = { eventId };
     

@@ -242,7 +242,7 @@ export default function EventDetailPage() {
                   placeholder="Enter your email address"
                 />
                 <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-                  Your QR code will be sent to this email address
+                  Your QR code will be generated for this email address
                 </p>
               </div>
 
@@ -262,7 +262,7 @@ export default function EventDetailPage() {
             <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-muted/50 border border-border rounded-lg">
               <h3 className="text-sm font-medium text-foreground mb-2">What happens next?</h3>
               <ul className="text-xs sm:text-sm text-muted-foreground space-y-1">
-                <li>• You&apos;ll receive a confirmation email with your QR code</li>
+                <li>• You&apos;ll receive a digital ticket with your QR code</li>
                 <li>• Bring the QR code to the event for easy check-in</li>
                 <li>• Your attendance will be automatically tracked</li>
               </ul>

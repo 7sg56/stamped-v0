@@ -141,6 +141,14 @@ router.get('/export/:eventId', auth, async (req, res) => {
       });
     }
 
+    // Check if user is superadmin or event owner
+    if (!req.user.isSuperAdmin && event.organizer.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You can only export data for your own events.'
+      });
+    }
+
     // Get all participants for the event
     const participants = await Participant.find({ eventId })
       .sort({ createdAt: 1 })

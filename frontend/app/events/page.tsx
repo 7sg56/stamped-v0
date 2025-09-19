@@ -112,7 +112,7 @@ export default function EventsPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Available Events</h1>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             Browse through all available events and register for the ones you&apos;d like to attend. 
-            You&apos;ll receive a QR code via email after registration.
+            You&apos;ll receive a digital ticket with QR code after registration.
           </p>
         </div>
 
