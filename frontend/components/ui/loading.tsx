@@ -227,8 +227,78 @@ export function useLoadingWithProgress(estimatedDuration?: number) {
 
 // Predefined durations for common operations
 export const LOADING_DURATIONS = {
+  LIGHTNING: 100,  // 0.1 seconds - lightning fast operations
+  INSTANT: 500,    // 0.5 seconds - instant operations
   FAST: 3000,      // 3 seconds - quick operations
   NORMAL: 8000,    // 8 seconds - normal API calls
   SLOW: 15000,     // 15 seconds - heavy operations
   RENDER_COLD: 20000, // 20 seconds - Render.com cold starts
 } as const;
+
+// Smart duration selection based on operation type
+export const getLoadingDuration = (operation: string, context?: any): number => {
+  const operationLower = operation.toLowerCase();
+  
+  // Check for cold start first - this is the main issue
+  if (context?.isFirstLoad || 
+      context?.isColdStart || 
+      operationLower.includes('cold') ||
+      operationLower.includes('startup') ||
+      operationLower.includes('first')) {
+    return LOADING_DURATIONS.RENDER_COLD;
+  }
+  
+  // Most operations are actually very fast (<500ms)
+  // Lightning fast operations (0.1s) - for immediate feedback
+  if (operationLower.includes('save') || 
+      operationLower.includes('toggle') || 
+      operationLower.includes('click') ||
+      operationLower.includes('switch') ||
+      operationLower.includes('update') ||
+      operationLower.includes('delete') ||
+      operationLower.includes('login') || 
+      operationLower.includes('logout') ||
+      operationLower.includes('navigate') ||
+      operationLower.includes('redirect') ||
+      operationLower.includes('fetch') || 
+      operationLower.includes('load') ||
+      operationLower.includes('get') ||
+      operationLower.includes('search') ||
+      operationLower.includes('create') || 
+      operationLower.includes('register') ||
+      operationLower.includes('submit')) {
+    return LOADING_DURATIONS.LIGHTNING;
+  }
+  
+  // Only heavy operations get longer durations
+  if (operationLower.includes('export') || 
+      operationLower.includes('generate') ||
+      operationLower.includes('process') ||
+      operationLower.includes('calculate') ||
+      operationLower.includes('upload')) {
+    return LOADING_DURATIONS.SLOW;
+  }
+  
+  // Default to lightning for most operations
+  return LOADING_DURATIONS.LIGHTNING;
+};
+
+// Context-aware loading duration selection
+export const getContextualDuration = (context: {
+  operation: string;
+  isFirstLoad?: boolean;
+  isColdStart?: boolean;
+  isHeavyOperation?: boolean;
+  isQuickOperation?: boolean;
+}): number => {
+  const { operation, isFirstLoad, isColdStart, isHeavyOperation, isQuickOperation } = context;
+  
+  // Cold start is the main issue - everything else is fast
+  if (isFirstLoad || isColdStart) return LOADING_DURATIONS.RENDER_COLD;
+  
+  // Only heavy operations get longer durations
+  if (isHeavyOperation) return LOADING_DURATIONS.SLOW;
+  
+  // Everything else is lightning fast (most operations <500ms)
+  return LOADING_DURATIONS.LIGHTNING;
+};
