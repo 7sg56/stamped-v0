@@ -69,7 +69,7 @@ export default function EventScannerPage() {
       
       if (token && adminUserStr) {
         try {
-          const adminUser = JSON.parse(adminUserStr);
+          JSON.parse(adminUserStr);
           setIsAuthenticated(true);
         } catch (error) {
           console.error('Error parsing admin user:', error);
@@ -253,7 +253,7 @@ export default function EventScannerPage() {
         <div className="text-center">
           <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Event Not Found</h1>
-          <p className="text-muted-foreground mb-4">The event you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-4">The event you&apos;re looking for doesn&apos;t exist.</p>
           <Link href="/events" className="text-primary hover:underline">
             Browse Events
           </Link>

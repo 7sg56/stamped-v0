@@ -5,13 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Calendar,
-  Users,
   Plus,
   Eye,
   Download,
   LogOut,
-  TrendingUp,
-  Clock,
   QrCode,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -127,16 +124,7 @@ export default function AdminDashboard() {
     router.push("/");
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+
 
   const exportEventData = async (eventId: string, eventTitle: string) => {
     try {
@@ -222,11 +210,19 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Create New Event Card */}
             <Link href="/events/create" className="group">
-              <div className="bg-card rounded-lg border p-3 sm:p-4 hover:shadow-lg hover:border-primary/50 transition-all duration-200 hover:scale-[1.02] cursor-pointer h-full flex flex-col items-center justify-center min-h-[240px] bg-gradient-to-br from-primary/5 to-primary/10">
-                <Plus className="h-12 w-12 text-primary mb-4" />
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center">
-                  Create New Event
-                </h3>
+              <div className="bg-zinc-950/80 backdrop-blur-sm rounded-xl border border-zinc-900 p-6 hover:border-zinc-700 hover:bg-zinc-950/90 transition-all duration-300 hover:scale-[1.02] cursor-pointer h-full flex flex-col items-center justify-center min-h-[240px] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/10 to-zinc-900/20"></div>
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="p-4 rounded-full bg-zinc-800/50 mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Plus className="h-8 w-8 text-zinc-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white text-center">
+                    Create Event
+                  </h3>
+                  <p className="text-sm text-zinc-500 mt-2 text-center">
+                    Start something new
+                  </p>
+                </div>
               </div>
             </Link>
 
@@ -343,7 +339,7 @@ export default function AdminDashboard() {
                 Ready to get started?
               </h3>
               <p className="text-muted-foreground">
-                Click the "Create New Event" card above to create your first
+                Click the &quot;Create New Event&quot; card above to create your first
                 event!
               </p>
             </div>

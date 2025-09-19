@@ -44,7 +44,7 @@ export default function ScannerSelectorPage() {
       }
       
       try {
-        const adminUser = JSON.parse(adminUserStr);
+        JSON.parse(adminUserStr);
         setIsAuthenticated(true);
         fetchEvents();
       } catch (error) {
