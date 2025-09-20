@@ -2,7 +2,29 @@
 
 All notable changes to the Stamped project will be documented in this file.
 
-## [Latest Updates] - 2025-01-20
+## [Latest Updates] - 2025-01-21
+
+### 🔒 Security & Architecture Improvements
+
+- **Route Separation**: Complete isolation between public and admin routes for enhanced security
+- **Session Security**: Admin sessions no longer interfere with public event viewing
+- **Access Control**: Event-specific scanners with proper authentication validation
+- **File Structure Reorganization**: Moved admin routes under `/admin/` prefix for better security boundaries
+
+### 🏗️ File Structure Changes
+
+- **Admin Route Restructuring**: All admin functionality moved to `/admin/*` routes
+- **Public Route Isolation**: Public event pages completely separated from admin interfaces
+- **Component Organization**: Enhanced component structure with better separation of concerns
+- **Security Boundaries**: Clear distinction between public and authenticated areas
+
+### 🎨 UI/UX Improvements
+
+- **EventCard Button Spacing Fix**: Fixed intersection issue between eye icon and text in event card buttons
+- **Improved Button Layout**: Replaced margin-based spacing with gap-based layout for more reliable spacing
+- **Enhanced Button Structure**: Wrapped button text in span elements for better control and accessibility
+
+## [Previous Updates] - 2025-01-20
 
 ### 🎯 System Improvements
 

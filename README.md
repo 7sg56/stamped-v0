@@ -33,7 +33,8 @@
 - **Data Export** - Export attendance data as CSV/Excel files
 - **Responsive Design** - Mobile-first design that works on all devices
 - **Smart Validation** - Prevents duplicate registrations and ensures data integrity
-- **User Experience** - Simplified scanner feedback and improved registration flow
+- **Security Architecture** - Complete separation between public and admin routes with proper access controls
+- **User Experience** - Simplified scanner feedback, improved registration flow, and polished UI components
 - **SuperAdmin** - Superadmins can view/pause/delete all the events without interference of organizers
 
 ## 🗂️ Route Structure

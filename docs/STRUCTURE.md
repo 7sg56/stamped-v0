@@ -56,7 +56,7 @@ stamped/
 │   │   │   ├── spotlight.tsx # Spotlight effect
 │   │   │   ├── shooting-stars.tsx # Shooting stars animation
 │   │   │   └── stars-background.tsx # Star background
-│   │   └── EventCard.tsx     # Custom event card
+│   │   └── EventCard.tsx     # Custom event card with improved button spacing
 │   ├── lib/                  # Utility functions
 │   │   └── utils.ts          # Common utilities
 │   ├── public/               # Static assets
@@ -74,21 +74,3 @@ stamped/
 └── .gitignore               # Git ignore rules
 ```
 
-## Key Directories
-
-### Backend (`/backend`)
-- **`config/`** - Database and server configuration
-- **`middleware/`** - Express middleware for auth, logging, error handling
-- **`models/`** - Mongoose schemas for database entities
-- **`routes/`** - API endpoint definitions and handlers
-- **`utils/`** - Helper functions for QR codes, exports, and utilities
-
-### Frontend (`/frontend`)
-- **`app/`** - Next.js App Router pages and layouts
-- **`components/`** - Reusable React components
-- **`lib/`** - Utility functions and configurations
-- **`public/`** - Static assets and images
-
-### Documentation (`/docs`)
-- **`API.md`** - Complete API endpoint documentation
-- **`STRUCTURE.md`** - This file with project structure details
