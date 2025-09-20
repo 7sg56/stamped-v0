@@ -45,7 +45,7 @@ function CustomLoadingAnimation({
       if (progress >= 100) {
         setIsComplete(true);
         if (onComplete) {
-          setTimeout(() => onComplete(), 300); // Small delay for visual feedback
+          setTimeout(() => onComplete(), 500); // Longer delay to show completion
         }
       }
     }
@@ -240,7 +240,7 @@ export function useLoadingWithProgress(estimatedDuration?: number) {
     setTimeout(() => {
       setIsLoading(false);
       setProgress(0);
-    }, 300);
+    }, 500); // Wait longer to show completion
   };
 
   const updateProgress = (newProgress: number) => {
@@ -377,11 +377,11 @@ export function useApiLoading() {
       setProgress(100);
       options?.onProgress?.(100);
 
-      // Small delay to show completion
+      // Wait to show completion animation
       setTimeout(() => {
         setIsLoading(false);
         setProgress(0);
-      }, 300);
+      }, 500);
 
       return result;
     } catch (err) {
