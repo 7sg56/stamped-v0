@@ -13,7 +13,8 @@ import {
   Play, 
   UserCheck,
   UserX,
-  Download
+  Download,
+  QrCode
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageLoading } from '@/components/ui/loading';
@@ -53,12 +54,12 @@ export default function AdminEventDetailPage() {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
-        router.push('/login');
+        router.push('/auth/login');
         return;
       }
 
       // Fetch event details
-  const eventResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
+      const eventResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -69,12 +70,12 @@ export default function AdminEventDetailPage() {
         setEvent(eventData.event);
       } else {
         toast.error('Event not found');
-        router.push('/dashboard');
+        router.push('/admin/dashboard');
         return;
       }
 
       // Fetch participants
-  const participantsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/registrations/event/${eventId}`, {
+      const participantsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/registrations/event/${eventId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -89,7 +90,7 @@ export default function AdminEventDetailPage() {
     } catch (error) {
       console.error('Error fetching event data:', error);
       toast.error('Failed to fetch event data');
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     } finally {
       setLoading(false);
     }
@@ -109,7 +110,7 @@ export default function AdminEventDetailPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -120,7 +121,7 @@ export default function AdminEventDetailPage() {
       
       if (data.success) {
         toast.success('Event deleted successfully');
-        router.push('/dashboard');
+        router.push('/admin/dashboard');
       } else {
         toast.error(data.message || 'Failed to delete event');
       }
@@ -138,7 +139,7 @@ export default function AdminEventDetailPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +169,7 @@ export default function AdminEventDetailPage() {
   const exportEventData = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/attendance/export/${eventId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/attendance/export/${eventId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -215,7 +216,7 @@ export default function AdminEventDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-foreground mb-4">Event Not Found</h2>
-          <Link href="/dashboard" className="text-primary hover:text-primary/80">
+          <Link href="/admin/dashboard" className="text-primary hover:text-primary/80">
             Back to Dashboard
           </Link>
         </div>
@@ -232,11 +233,17 @@ export default function AdminEventDetailPage() {
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
-            <Link href="/dashboard" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/admin/dashboard" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Dashboard
             </Link>
             <div className="flex items-center space-x-4">
+              <Link href={`/admin/events/${eventId}/scanner`}>
+                <button className="flex items-center px-3 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150">
+                  <QrCode className="h-4 w-4 mr-2" />
+                  Scanner
+                </button>
+              </Link>
               <button
                 onClick={exportEventData}
                 className="flex items-center px-3 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-card hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"

@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, Lock, User, Eye, EyeOff, Shield } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Lock, User, Eye, EyeOff, Shield } from "lucide-react";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface LoginData {
   username: string;
@@ -18,8 +24,8 @@ interface LoginData {
 export default function AdminLoginPage() {
   const router = useRouter();
   const [loginData, setLoginData] = useState<LoginData>({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,29 +35,32 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
         // Store token in localStorage
-        localStorage.setItem('adminToken', data.token);
-        localStorage.setItem('adminUser', JSON.stringify(data.admin));
-        
-        toast.success('Login successful!');
-        router.push('/dashboard');
+        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("adminUser", JSON.stringify(data.admin));
+
+        toast.success("Login successful!");
+        router.push("/admin/dashboard");
       } else {
-        toast.error(data.message || 'Login failed');
+        toast.error(data.message || "Login failed");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Login failed. Please try again.');
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,7 +74,9 @@ export default function AdminLoginPage() {
             <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg mr-3">
               <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Secure Access</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+              Secure Access
+            </h1>
           </div>
         </div>
         <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-foreground">
@@ -79,7 +90,9 @@ export default function AdminLoginPage() {
       <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl">Authentication Required</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
+              Authentication Required
+            </CardTitle>
             <CardDescription className="text-sm">
               Please provide your login credentials to proceed
             </CardDescription>
@@ -87,7 +100,9 @@ export default function AdminLoginPage() {
           <CardContent>
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm">Username</Label>
+                <Label htmlFor="username" className="text-sm">
+                  Username
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -96,7 +111,9 @@ export default function AdminLoginPage() {
                     type="text"
                     required
                     value={loginData.username}
-                    onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, username: e.target.value })
+                    }
                     className="pl-10 h-10 sm:h-9"
                     placeholder="Enter your username"
                   />
@@ -104,16 +121,20 @@ export default function AdminLoginPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm">Password</Label>
+                <Label htmlFor="password" className="text-sm">
+                  Password
+                </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     required
                     value={loginData.password}
-                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, password: e.target.value })
+                    }
                     className="pl-10 pr-10 h-10 sm:h-9"
                     placeholder="Enter your password"
                   />
@@ -136,20 +157,23 @@ export default function AdminLoginPage() {
                 disabled={loading}
                 className="w-full h-10 sm:h-9"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
 
             <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
               <div className="text-center">
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Don&apos;t have an account?{' '}
-                  <Link href="/register" className="text-primary hover:underline">
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    href="/auth/register"
+                    className="text-primary hover:underline"
+                  >
                     Create one here
                   </Link>
                 </p>
               </div>
-              
+
               <div className="text-center">
                 <Button variant="ghost" asChild className="h-10 sm:h-9">
                   <Link href="/">

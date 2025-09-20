@@ -44,7 +44,7 @@ interface Event {
   };
 }
 
-export default function EventScannerPage() {
+export default function AdminEventScannerPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
@@ -99,21 +99,21 @@ export default function EventScannerPage() {
           setEvent(data.event);
         } else {
           toast.error('Event not found');
-          router.push('/events');
+          router.push('/admin/dashboard');
         }
       } catch (error) {
         console.error('Error fetching event:', error);
         toast.error('Failed to load event');
-        router.push('/events');
+        router.push('/admin/dashboard');
       } finally {
         setLoading(false);
       }
     };
 
-    if (eventId) {
+    if (eventId && isAuthenticated) {
       fetchEventData();
     }
-  }, [eventId, router]);
+  }, [eventId, router, isAuthenticated]);
 
   const startScanning = async () => {
     try {
@@ -251,7 +251,7 @@ export default function EventScannerPage() {
           <Shield className="h-12 w-12 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
           <p className="text-muted-foreground mb-4">Admin authentication required to access the scanner.</p>
-          <Link href="/login" className="text-primary hover:underline">
+          <Link href="/auth/login" className="text-primary hover:underline">
             Go to Login
           </Link>
         </div>
@@ -266,8 +266,8 @@ export default function EventScannerPage() {
           <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Event Not Found</h1>
           <p className="text-muted-foreground mb-4">The event you&apos;re looking for doesn&apos;t exist.</p>
-          <Link href="/events" className="text-primary hover:underline">
-            Browse Events
+          <Link href="/admin/dashboard" className="text-primary hover:underline">
+            Back to Dashboard
           </Link>
         </div>
       </div>
@@ -280,14 +280,14 @@ export default function EventScannerPage() {
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container">
           <div className="flex items-center justify-between py-4 sm:py-6">
-            <Link href="/dashboard" className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base">
+            <Link href={`/admin/events/${eventId}`} className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base">
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="hidden sm:inline">Back to Event</span>
               <span className="sm:hidden">Back</span>
             </Link>
             <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
               <Shield className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Event Scanner</span>
+              <span className="hidden sm:inline">Admin Scanner</span>
               <span className="sm:hidden">Scanner</span>
             </div>
           </div>

@@ -15,6 +15,7 @@
 ## 📋 Table of Contents
 
 - [Features](#-features)
+- [Route Structure](#-route-structure)
 - [Planned Features](#-planned-features)
 - [Tech Stack](#-tech-stack)
 - [Quick Start](#-quick-start)
@@ -34,6 +35,28 @@
 - **Smart Validation** - Prevents duplicate registrations and ensures data integrity
 - **User Experience** - Simplified scanner feedback and improved registration flow
 - **SuperAdmin** - Superadmins can view/pause/delete all the events without interference of organizers
+
+## 🗂️ Route Structure
+
+### Public Routes
+- `/events` - Browse all active events
+- `/events/[id]` - **Public event page** with registration form (no admin interference)
+- `/events/[id]/thank-you` - Registration confirmation page
+
+### Admin Routes  
+- `/admin/dashboard` - Admin dashboard with event management
+- `/admin/events/create` - Create new events (admin-only)
+- `/admin/events/[id]` - **Admin event page** with participant management
+- `/admin/events/[id]/scanner` - QR code scanner for attendance (admin-only)
+- `/auth/login` - Admin authentication
+- `/auth/register` - Admin registration
+
+### Key Features
+- **Complete separation** - Public and admin routes are completely isolated
+- **No session interference** - Admin sessions don't affect public event viewing
+- **Event-specific scanners** - Each event has its own scanner for security
+- **Always-visible participants** - Admin page shows participant list without toggle buttons
+- **Clean file structure** - Organized admin routes under `/admin/` prefix
 
 ### 🚧 Planned Features
 

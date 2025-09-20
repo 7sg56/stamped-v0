@@ -48,7 +48,7 @@ export default function AdminDashboard() {
     const user = localStorage.getItem("adminUser");
 
     if (!token || !user) {
-      router.push("/login");
+      router.push("/auth/login");
       return;
     }
 
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
       setAdminUser(JSON.parse(user));
     } catch (error) {
       console.error("Error parsing admin user:", error);
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, [router]);
 
@@ -209,7 +209,7 @@ export default function AdminDashboard() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Create New Event Card */}
-            <Link href="/events/create" className="group">
+            <Link href="/admin/events/create" className="group">
               <div className="bg-zinc-950/80 backdrop-blur-sm rounded-xl border border-zinc-900 p-6 hover:border-zinc-700 hover:bg-zinc-950/90 transition-all duration-300 hover:scale-[1.02] cursor-pointer h-full flex flex-col items-center justify-center min-h-[240px] relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/10 to-zinc-900/20"></div>
                 <div className="relative z-10 flex flex-col items-center">
@@ -304,7 +304,7 @@ export default function AdminDashboard() {
                   {/* Inline Action Buttons */}
                   <div className="flex items-center justify-between pt-3 border-t border-border">
                     <Link
-                      href={`/events/admin/${event._id}`}
+                      href={`/admin/events/${event._id}`}
                       className="inline-flex items-center px-3 py-1.5 border border-border text-xs font-medium rounded text-foreground bg-background hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"
                     >
                       <Eye className="h-3 w-3 mr-1" />
@@ -312,7 +312,7 @@ export default function AdminDashboard() {
                     </Link>
                     <div className="flex items-center space-x-2">
                       <Link
-                        href={`/events/${event._id}/scanner`}
+                        href={`/admin/events/${event._id}/scanner`}
                         className="inline-flex items-center px-3 py-1.5 border border-border text-xs font-medium rounded text-foreground bg-background hover:bg-muted hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 active:bg-muted/80 active:scale-95 transition-all duration-150"
                       >
                         <QrCode className="h-3 w-3 mr-1" />

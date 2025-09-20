@@ -82,7 +82,7 @@ export default function Home() {
                   Events
                 </Link>
                 <Button variant="outline" size="sm" asChild className="h-8 px-3 sm:px-4 text-xs sm:text-sm">
-                  <Link href="/login" className="flex items-center">
+                  <Link href="/auth/login" className="flex items-center">
                     <Shield className="h-3 w-3 mr-1" />
                     <span className="hidden sm:inline">Login</span>
                   </Link>

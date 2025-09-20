@@ -57,7 +57,7 @@ export default function AdminRegisterPage() {
 
       if (data.success) {
         toast.success('Registration successful! Please login to continue.');
-        router.push('/login');
+        router.push('/auth/login');
       } else {
         toast.error(data.message || 'Registration failed');
       }
@@ -190,7 +190,7 @@ export default function AdminRegisterPage() {
               <div className="text-center">
                 <p className="text-xs sm:text-sm text-muted-foreground">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-primary hover:underline">
+                  <Link href="/auth/login" className="text-primary hover:underline">
                     Sign in here
                   </Link>
                 </p>
