@@ -24,11 +24,12 @@
 ### Current Features
 - **Event Management** - Create and manage events with full CRUD operations
 - **QR Code Attendance** - Real-time QR code scanning for instant check-ins
-- **Admin Dashboard** - Comprehensive analytics and event management
-- **SuperAdmin Dashboard** - Admins but with super powers to view/edit all events
-- **Digital Tickets** - Professional PDF ticket generation with QR codes
+- **Admin Dashboard** - Comprehensive analytics and event management with dark theme
+- **Digital Tickets** - Professional PDF ticket generation with QR codes and auto-download
 - **Data Export** - Export attendance data as CSV/Excel files
 - **Responsive Design** - Mobile-first design that works on all devices
+- **Smart Validation** - Prevents duplicate registrations and ensures data integrity
+- **User Experience** - Simplified scanner feedback and improved registration flow
 
 ### 🚧 Planned Features
 
@@ -103,6 +104,8 @@
 | 📖 **API Reference** | Complete API endpoints with request/response examples | [View API Docs](docs/API.md) |
 | 🏗️ **Project Structure** | Detailed file organization and directory explanations | [View Structure Guide](docs/STRUCTURE.md) |
 | ⚙️ **Environment Setup** | Configuration guide for development and production | [View Environment Guide](docs/ENV.md) |
+| 📝 **Changelog** | Track of all updates, improvements, and bug fixes | [View Changelog](docs/CHANGELOG.md) |
+| 🚀 **Quick Reference** | Developer commands, debugging tips, and common tasks | [View Quick Reference](docs/QUICK_REFERENCE.md) |
 
 ### Quick Navigation
 - **Getting Started**: See [Quick Start](#-quick-start) section below

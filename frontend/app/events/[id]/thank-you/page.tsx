@@ -130,27 +130,35 @@ export default function ThankYouPage() {
 
   // Auto-download ticket when registration data is available
   useEffect(() => {
-    if (registrationData && ticketGeneratorRef.current && !ticketDownloaded && !ticketDownloadFailed) {
+    if (registrationData && !loading && !ticketDownloaded && !ticketDownloadFailed) {
       const autoDownloadTicket = async () => {
+        // Wait for component to be fully mounted
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        if (!ticketGeneratorRef.current) {
+          console.error('TicketGenerator ref not available');
+          setTicketDownloadFailed(true);
+          toast.error('Auto-download failed. Please try manually.');
+          return;
+        }
+
         try {
           setIsGeneratingTicket(true);
-          await ticketGeneratorRef.current!.generateAndDownloadTicket();
+          await ticketGeneratorRef.current.generateAndDownloadTicket();
           setTicketDownloaded(true);
           toast.success('Ticket downloaded automatically!');
         } catch (error) {
           console.error('Auto ticket download failed:', error);
           setTicketDownloadFailed(true);
-          toast.error('Auto-download failed. Please try manually.');
+          toast.error('Auto-download failed. Please click the download button.');
         } finally {
           setIsGeneratingTicket(false);
         }
       };
 
-      // Small delay to ensure component is fully mounted
-      const timer = setTimeout(autoDownloadTicket, 1000);
-      return () => clearTimeout(timer);
+      autoDownloadTicket();
     }
-  }, [registrationData, ticketDownloaded, ticketDownloadFailed]);
+  }, [registrationData, loading, ticketDownloaded, ticketDownloadFailed]);
 
 
   const handleDownloadTicket = async () => {
@@ -243,7 +251,12 @@ export default function ThankYouPage() {
               {isGeneratingTicket ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-2"></div>
-                  Generating...
+                  Generating Ticket...
+                </>
+              ) : ticketDownloaded ? (
+                <>
+                  <Download className="h-5 w-5 mr-2" />
+                  Download Again
                 </>
               ) : (
                 <>
@@ -254,7 +267,13 @@ export default function ThankYouPage() {
             </button>
             
             <p className="text-xs text-muted-foreground">
-              The ticket will be automatically downloaded to your device, if not, please click the button above.
+              {ticketDownloaded ? (
+                "Ticket downloaded successfully! You can download it again if needed."
+              ) : ticketDownloadFailed ? (
+                "Auto-download failed. Please click the button above to download manually."
+              ) : (
+                "Your ticket is being prepared for download..."
+              )}
             </p>
           </div>
 

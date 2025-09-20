@@ -216,6 +216,18 @@ export default function EventScannerPage() {
     setQrCodePreview(null);
   };
 
+  const getSimpleErrorMessage = (message: string) => {
+    if (message.includes('different event')) {
+      return 'Wrong event QR code';
+    } else if (message.includes('already marked') || message.includes('duplicate')) {
+      return 'Already checked in';
+    } else if (message.includes('not found') || message.includes('invalid')) {
+      return 'Invalid QR code';
+    } else {
+      return 'Check-in failed';
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -392,79 +404,27 @@ export default function EventScannerPage() {
         {/* Results Section */}
         {attendanceResult && (
           <div className="bg-card border rounded-lg p-6">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center justify-center mb-4">
               {attendanceResult.success ? (
-                <CheckCircle className="h-8 w-8 text-green-500 mr-3" />
+                <CheckCircle className="h-16 w-16 text-green-500 mb-2" />
               ) : (
-                <XCircle className="h-8 w-8 text-destructive mr-3" />
+                <XCircle className="h-16 w-16 text-destructive mb-2" />
               )}
-              <h2 className="text-xl font-semibold text-card-foreground">
-                {attendanceResult.success ? 'Attendance Marked' : 'Error'}
-              </h2>
             </div>
-
-            <p className={`text-lg mb-4 ${attendanceResult.success ? 'text-green-600' : 'text-destructive'}`}>
-              {attendanceResult.message}
-            </p>
-
-            {/* Show success details */}
-            {attendanceResult.success && attendanceResult.data?.participant && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-medium text-green-800 mb-3 flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2" />
-                  Attendance Confirmed
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Participant</p>
-                    <p className="font-medium text-card-foreground">{attendanceResult.data.participant.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="font-medium text-card-foreground">{attendanceResult.data.participant.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Registration ID</p>
-                    <p className="font-medium text-card-foreground">{attendanceResult.data.participant.registrationId}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Attendance Time</p>
-                    <p className="font-medium text-card-foreground">
-                      {new Date(attendanceResult.data.participant.attendanceTime).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Show duplicate attendance info if available */}
-            {!attendanceResult.success && attendanceResult.data && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-medium text-destructive mb-3 flex items-center">
-                  <XCircle className="h-5 w-5 mr-2" />
-                  Duplicate Attendance Detected
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Participant</p>
-                    <p className="font-medium text-card-foreground">{attendanceResult.data.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Event</p>
-                    <p className="font-medium text-card-foreground">{attendanceResult.data.eventTitle}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Previously Attended</p>
-                    <p className="font-medium text-destructive">
-                      {attendanceResult.data.attendanceTime ? 
-                        new Date(attendanceResult.data.attendanceTime).toLocaleString() : 
-                        'Unknown time'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+            
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-card-foreground mb-2">
+                {attendanceResult.success ? 'Success!' : 'Failed'}
+              </h2>
+              
+              <p className={`text-lg ${attendanceResult.success ? 'text-green-600' : 'text-destructive'}`}>
+                {attendanceResult.success ? (
+                  `${attendanceResult.data?.participant?.name || 'Participant'} checked in successfully`
+                ) : (
+                  getSimpleErrorMessage(attendanceResult.message)
+                )}
+              </p>
+            </div>
           </div>
         )}
       </main>
