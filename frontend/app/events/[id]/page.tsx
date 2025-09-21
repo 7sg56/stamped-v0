@@ -92,29 +92,65 @@ export default function PublicEventDetailsPage() {
 
     setSubmitting(true);
     try {
+      console.log("Sending registration request:", {
+        name: registrationData.name.trim(),
+        email: registrationData.email.trim(),
+        eventId: eventId,
+      });
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/registrations`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(registrationData),
+          body: JSON.stringify({
+            name: registrationData.name.trim(),
+            email: registrationData.email.trim(),
+            eventId: eventId,
+          }),
         }
       );
 
+      console.log("Response status:", response.status);
       const data = await response.json();
-      if (data.success) {
+      console.log("Response data:", data);
+
+      if (data.success && data.registration) {
         toast.success("Registration successful!");
-        router.push(
-          `/events/${eventId}/thank-you?registrationId=${data.registrationId}`
+
+        // Build URL with all required parameters for thank-you page
+        const thankYouUrl = new URL(
+          `/events/${eventId}/thank-you`,
+          window.location.origin
         );
+        thankYouUrl.searchParams.set("name", data.registration.name);
+        thankYouUrl.searchParams.set("email", data.registration.email);
+        thankYouUrl.searchParams.set(
+          "registrationId",
+          data.registration.registrationId
+        );
+        thankYouUrl.searchParams.set(
+          "eventTitle",
+          data.registration.eventTitle
+        );
+        thankYouUrl.searchParams.set("eventDate", data.registration.eventDate);
+        thankYouUrl.searchParams.set("venue", data.registration.venue);
+        thankYouUrl.searchParams.set("description", event?.description || "");
+        thankYouUrl.searchParams.set(
+          "qrCodeData",
+          data.registration.qrCodeData
+        );
+
+        router.push(thankYouUrl.pathname + thankYouUrl.search);
       } else {
+        console.error("Registration failed:", data);
         toast.error(data.message || "Registration failed");
       }
     } catch (error) {
       console.error("Error registering:", error);
-      toast.error("Registration failed");
+      toast.error("Registration failed - network error");
     } finally {
       setSubmitting(false);
     }
