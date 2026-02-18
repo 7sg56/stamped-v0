@@ -24,8 +24,6 @@ router.get('/health', async (req, res) => {
     // Get database connection details
     const dbInfo = {
       status: dbStatusMap[dbStatus] || 'unknown',
-      host: mongoose.connection.host || 'unknown',
-      name: mongoose.connection.name || 'unknown',
       readyState: dbStatus
     };
 
@@ -39,22 +37,9 @@ router.get('/health', async (req, res) => {
         await mongoose.connection.db.admin().ping();
         dbHealthy = true;
       } catch (error) {
-        dbError = error.message;
+        dbError = 'Database connectivity check failed';
       }
     }
-
-    // Get system information
-    const systemInfo = {
-      uptime: process.uptime(),
-      memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
-        external: Math.round(process.memoryUsage().external / 1024 / 1024)
-      },
-      nodeVersion: process.version,
-      platform: process.platform,
-      environment: process.env.NODE_ENV || 'development'
-    };
 
     // Determine overall health status
     const isHealthy = dbHealthy && dbStatus === 1;
@@ -65,13 +50,11 @@ router.get('/health', async (req, res) => {
       status: isHealthy ? 'healthy' : 'unhealthy',
       message: 'Stamped Event Management API Health Check',
       timestamp: new Date().toISOString(),
-      version: '2.0.0',
       database: {
         ...dbInfo,
         healthy: dbHealthy,
         error: dbError
       },
-      system: systemInfo,
       services: {
         api: 'operational',
         database: dbHealthy ? 'operational' : 'degraded'
@@ -86,16 +69,10 @@ router.get('/health', async (req, res) => {
       status: 'unhealthy',
       message: 'Health check failed',
       timestamp: new Date().toISOString(),
-      version: '2.0.0',
-      error: error.message,
       database: {
         status: 'unknown',
         healthy: false,
         error: 'Health check error'
-      },
-      system: {
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development'
       }
     });
   }
