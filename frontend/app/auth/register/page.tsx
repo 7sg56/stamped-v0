@@ -38,8 +38,32 @@ export default function AdminRegisterPage() {
       return;
     }
 
-    if (registerData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+    if (registerData.password.length < 12) {
+      toast.error('Password must be at least 12 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[A-Z]/.test(registerData.password)) {
+      toast.error('Password must contain at least one uppercase letter');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[a-z]/.test(registerData.password)) {
+      toast.error('Password must contain at least one lowercase letter');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[0-9]/.test(registerData.password)) {
+      toast.error('Password must contain at least one number');
+      setLoading(false);
+      return;
+    }
+
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(registerData.password)) {
+      toast.error('Password must contain at least one special character');
       setLoading(false);
       return;
     }
@@ -145,7 +169,7 @@ export default function AdminRegisterPage() {
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Minimum 6 characters
+                  Minimum 12 characters, including uppercase, lowercase, number, and special character
                 </p>
               </div>
 

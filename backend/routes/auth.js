@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const { validatePassword } = require('../utils/password');
 
 const router = express.Router();
 
@@ -94,10 +95,11 @@ router.post('/register', async (req, res) => {
     }
 
     // Validate password strength
-    if (password.length < 6) {
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters long'
+        message: passwordValidation.message
       });
     }
 
