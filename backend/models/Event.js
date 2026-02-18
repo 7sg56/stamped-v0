@@ -5,39 +5,13 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Event title is required'],
     trim: true,
-    validate: [
-      {
-        validator: function(value) {
-          return value && value.length > 0;
-        },
-        message: 'Event title cannot be empty'
-      },
-      {
-        validator: function(value) {
-          return !value || value.length <= 200;
-        },
-        message: 'Event title cannot exceed 200 characters'
-      }
-    ]
+    maxlength: [200, 'Event title cannot exceed 200 characters']
   },
   description: {
     type: String,
     required: [true, 'Event description is required'],
     trim: true,
-    validate: [
-      {
-        validator: function(value) {
-          return value && value.length > 0;
-        },
-        message: 'Event description cannot be empty'
-      },
-      {
-        validator: function(value) {
-          return !value || value.length <= 2000;
-        },
-        message: 'Event description cannot exceed 2000 characters'
-      }
-    ]
+    maxlength: [2000, 'Event description cannot exceed 2000 characters']
   },
   date: {
     type: Date,
@@ -53,20 +27,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Event venue is required'],
     trim: true,
-    validate: [
-      {
-        validator: function(value) {
-          return value && value.length > 0;
-        },
-        message: 'Event venue cannot be empty'
-      },
-      {
-        validator: function(value) {
-          return !value || value.length <= 500;
-        },
-        message: 'Event venue cannot exceed 500 characters'
-      }
-    ]
+    maxlength: [500, 'Event venue cannot exceed 500 characters']
   },
   maxParticipants: {
     type: Number,
