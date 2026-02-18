@@ -11,8 +11,7 @@ const Admin = require("./models/Admin");
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Connect to database
-connectDB();
+// Database connection is handled in server startup block below
 
 app.set('trust proxy', 1);
 app.use(requestId);
@@ -56,10 +55,7 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    version: process.env.npm_package_version || '2.0.0',
-    environment: process.env.NODE_ENV
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -98,23 +94,29 @@ app.use(errorLogger);
 // Global error handler (must be last middleware)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log("🚀 STAMPED Event Management System Backend");
-  console.log("=".repeat(50));
-  console.log(`📍 Server running on port ${PORT}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`📊 API available at http://localhost:${PORT}/api`);
-  console.log(`🏥 Health check at http://localhost:${PORT}/api/health`);
-  console.log("=".repeat(50));
-  console.log("✅ Server initialization complete");
-  
-  // Start event cleanup task
-  startEventCleanupTask();
-  
-  // Create superadmin user on startup
-  
-  Admin.createSuperAdmin().catch(err => {
-    console.error('Error creating superadmin user:', err);
+// Start server only if run directly
+if (require.main === module) {
+  // Connect to database
+  connectDB();
+
+  app.listen(PORT, () => {
+    console.log("🚀 STAMPED Event Management System Backend");
+    console.log("=".repeat(50));
+    console.log(`📍 Server running on port ${PORT}`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`📊 API available at http://localhost:${PORT}/api`);
+    console.log(`🏥 Health check at http://localhost:${PORT}/api/health`);
+    console.log("=".repeat(50));
+    console.log("✅ Server initialization complete");
+
+    // Start event cleanup task
+    startEventCleanupTask();
+
+    // Create superadmin user on startup
+    Admin.createSuperAdmin().catch(err => {
+      console.error('Error creating superadmin user:', err);
+    });
   });
-});
+}
+
+module.exports = app;
