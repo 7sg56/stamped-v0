@@ -34,9 +34,13 @@ export default function EventsPage() {
     const refreshInterval = setInterval(fetchEvents, 30000);
 
     // Refresh when page becomes visible (user navigates back)
+    let refreshTimeout: NodeJS.Timeout;
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        fetchEvents();
+        clearTimeout(refreshTimeout);
+        refreshTimeout = setTimeout(() => {
+          fetchEvents();
+        }, 300);
       }
     };
 
@@ -45,6 +49,7 @@ export default function EventsPage() {
 
     return () => {
       clearInterval(refreshInterval);
+      clearTimeout(refreshTimeout);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleVisibilityChange);
     };
