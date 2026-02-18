@@ -17,7 +17,7 @@ def run(playwright):
 
     # Check for helper text
     try:
-        helper_text = page.locator('text="Minimum 12 characters, including uppercase, lowercase, number, and special character"')
+        helper_text = page.locator('text="Minimum 8 characters, including uppercase, lowercase, number, and special character"')
         if helper_text.is_visible():
             print("✅ Helper text verified.")
         else:
@@ -27,8 +27,8 @@ def run(playwright):
 
     # Fill invalid password to trigger validation
     page.fill('input[name="username"]', "testuser")
-    page.fill('input[name="password"]', "password123")
-    page.fill('input[name="confirmPassword"]', "password123")
+    page.fill('input[name="password"]', "pass12")
+    page.fill('input[name="confirmPassword"]', "pass12")
 
     # Click register
     page.click('button[type="submit"]')

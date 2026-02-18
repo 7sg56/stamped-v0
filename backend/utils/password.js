@@ -1,7 +1,7 @@
 /**
  * Validates password strength.
  * Requirements:
- * - At least 12 characters long
+ * - At least 8 characters long
  * - At least one uppercase letter
  * - At least one lowercase letter
  * - At least one number
@@ -15,8 +15,8 @@ const validatePassword = (password) => {
     return { isValid: false, message: 'Password is required' };
   }
 
-  if (password.length < 12) {
-    return { isValid: false, message: 'Password must be at least 12 characters long' };
+  if (password.length < 8) {
+    return { isValid: false, message: 'Password must be at least 8 characters long' };
   }
 
   if (!/[A-Z]/.test(password)) {
@@ -31,8 +31,8 @@ const validatePassword = (password) => {
     return { isValid: false, message: 'Password must contain at least one number' };
   }
 
-  // Use a regex that covers common special characters
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+  // Use a regex that covers any character that is not a letter or a number
+  if (!/[^A-Za-z0-9]/.test(password)) {
     return { isValid: false, message: 'Password must contain at least one special character' };
   }
 
