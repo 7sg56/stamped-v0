@@ -120,6 +120,9 @@ participantSchema.index({ registrationId: 1 }, { unique: true });
 participantSchema.index({ eventId: 1 });
 participantSchema.index({ attended: 1 });
 
+// Text index for full-text search optimization
+participantSchema.index({ name: 'text', email: 'text', registrationId: 'text' });
+
 // Pre-save middleware to set attendance time when attended is set to true
 participantSchema.pre('save', function(next) {
   if (this.isModified('attended') && this.attended === true && !this.attendanceTime) {
