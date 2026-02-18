@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const { Event, Participant } = require('../models');
 const auth = require('../middleware/auth');
 const { autoPauseExpiredEvents } = require('../utils/eventCleanup');
@@ -51,76 +52,90 @@ router.get('/', async (req, res) => {
       }
     );
 
+    const isSuperAdmin = req.user && req.user.isSuperAdmin;
+    let matchQuery = {};
+
     if (isAdminUser) {
-      // Check if user is superadmin
-      const isSuperAdmin = req.user && req.user.isSuperAdmin;
-      
-      let events;
-      if (isSuperAdmin) {
-        // Superadmin view: return ALL events with participant counts and stats
-        events = await Event.find({})
-          .populate('participants', 'attended')
-          .populate('organizer', 'username')
-          .sort({ date: 1 })
-          .lean();
-      } else {
-        // Regular admin view: return only events created by this admin with participant counts and stats
-        events = await Event.find({ organizer: req.user.id })
-          .populate('participants', 'attended')
-          .populate('organizer', 'username')
-          .sort({ date: 1 })
-          .lean();
+      if (!isSuperAdmin) {
+        // Regular admin view: return only events created by this admin
+        // Explicitly cast to ObjectId as Mongoose doesn't do this in aggregation
+        matchQuery.organizer = new mongoose.Types.ObjectId(req.user.id);
       }
-
-      // Add virtual fields for each event
-      const eventsWithStats = events.map(event => {
-        // Ensure organizer has a fallback
-        const organizer = event.organizer || { username: 'Unknown Organizer' };
-        
-        return {
-          ...event,
-          participantCount: event.participants ? event.participants.length : 0,
-          attendedCount: event.participants ? event.participants.filter(p => p.attended).length : 0,
-          organizer
-        };
-      });
-
-      res.json({
-        success: true,
-        events: eventsWithStats
-      });
+      // Superadmin view: matchQuery remains {} to return ALL events
     } else {
-      // Public view: return only active events with participant counts and organizer info
-      const events = await Event.find({ isActive: true })
-        .populate('participants', 'attended')
-        .populate('organizer', 'username')
-        .sort({ date: 1 })
-        .lean();
-
-      // Add participant counts but remove participant details for public access
-      const eventsWithCounts = events.map(event => {
-        const participantCount = event.participants ? event.participants.length : 0;
-        const attendedCount = event.participants ? event.participants.filter(p => p.attended).length : 0;
-        
-        // Remove participants array to keep it secure
-        delete event.participants;
-        
-        // Ensure organizer has a fallback
-        const organizer = event.organizer || { username: 'Unknown Organizer' };
-        
-        return {
-          ...event,
-          participantCount,
-          attendedCount,
-          organizer
-        };
-      });
-
-      res.json({
-        success: true,
-        events: eventsWithCounts
-      });
+      // Public view: return only active events
+      matchQuery.isActive = true;
     }
+
+    const eventsWithStats = await Event.aggregate([
+      { $match: matchQuery },
+      { $sort: { date: 1 } },
+      {
+        $lookup: {
+          from: 'admins',
+          localField: 'organizer',
+          foreignField: '_id',
+          as: 'organizerInfo'
+        }
+      },
+      { $unwind: { path: '$organizerInfo', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'participants',
+          let: { eventId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$eventId', '$$eventId'] } } },
+            { $project: { _id: 1, attended: 1 } }
+          ],
+          as: 'participantDocs'
+        }
+      },
+      {
+        $addFields: {
+          participantCount: { $size: '$participantDocs' },
+          attendedCount: {
+            $size: {
+              $filter: {
+                input: '$participantDocs',
+                as: 'p',
+                cond: { $eq: ['$$p.attended', true] }
+              }
+            }
+          },
+          organizer: {
+            $cond: {
+              if: '$organizerInfo',
+              then: {
+                _id: '$organizerInfo._id',
+                username: '$organizerInfo.username'
+              },
+              else: { username: 'Unknown Organizer' }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          organizerInfo: 0,
+          // Preserve participants array for admin view (as objects with _id and attended)
+          // to maintain API compatibility, while still benefiting from aggregation speed.
+          // For public view, remove participant details.
+          participants: {
+            $cond: {
+              if: { $eq: [isAdminUser, true] },
+              then: '$participantDocs',
+              else: '$$REMOVE'
+            }
+          },
+          participantDocs: 0
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      events: eventsWithStats
+    });
   } catch (error) {
     console.error('Get events error:', error);
     res.status(500).json({
@@ -159,7 +174,6 @@ router.get('/:id', async (req, res) => {
     );
 
     const event = await Event.findById(req.params.id)
-      .populate('participants', 'attended')
       .populate('organizer', 'username')
       .lean();
 
@@ -170,14 +184,14 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    // Add virtual fields for participant counts
+    // Add virtual fields for participant counts without loading all participant documents
     event.participantCount = event.participants ? event.participants.length : 0;
-    event.attendedCount = event.participants ? event.participants.filter(p => p.attended).length : 0;
+    event.attendedCount = await Participant.countDocuments({ eventId: event._id, attended: true });
 
     // Ensure organizer has a fallback
     event.organizer = event.organizer || { username: 'Unknown Organizer' };
 
-    // Remove participant details for public access, keep only counts
+    // Remove participant detail IDs for response, keep only counts
     delete event.participants;
 
     res.json({
@@ -425,17 +439,28 @@ router.get('/:id/stats', auth, async (req, res) => {
       });
     }
 
-    const participants = await Participant.find({ eventId: event._id });
-    const attendedCount = participants.filter(p => p.attended).length;
+    // Use aggregation for efficient statistics calculation at the database level
+    const statsResult = await Participant.aggregate([
+      { $match: { eventId: event._id } },
+      {
+        $group: {
+          _id: null,
+          totalParticipants: { $sum: 1 },
+          attendedCount: { $sum: { $cond: ['$attended', 1, 0] } }
+        }
+      }
+    ]);
+
+    const { totalParticipants = 0, attendedCount = 0 } = statsResult[0] || {};
 
     res.json({
       success: true,
       stats: {
-        totalParticipants: participants.length,
+        totalParticipants,
         attendedCount,
-        attendanceRate: participants.length > 0 ? (attendedCount / participants.length * 100).toFixed(2) : 0,
+        attendanceRate: totalParticipants > 0 ? (attendedCount / totalParticipants * 100).toFixed(2) : 0,
         maxParticipants: event.maxParticipants,
-        isFull: event.maxParticipants ? participants.length >= event.maxParticipants : false
+        isFull: event.maxParticipants ? totalParticipants >= event.maxParticipants : false
       }
     });
   } catch (error) {
