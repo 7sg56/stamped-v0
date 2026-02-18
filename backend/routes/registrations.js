@@ -193,12 +193,7 @@ router.get('/event/:eventId', verifyToken, async (req, res) => {
     
     // Add search filter if provided
     if (search && search.trim()) {
-      const searchTerm = search.trim();
-      query.$or = [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { email: { $regex: searchTerm, $options: 'i' } },
-        { registrationId: { $regex: searchTerm, $options: 'i' } }
-      ];
+      query.$text = { $search: search.trim() };
     }
 
     // Get participants with pagination
