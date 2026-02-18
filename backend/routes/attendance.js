@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Participant, Event } = require('../models');
 const { parseQRCode } = require('../utils/qr');
 const auth = require('../middleware/auth');
+const { generateAttendanceExport, generateExportFilename } = require('../utils/csv');
 
 const router = express.Router();
 
@@ -182,7 +183,6 @@ router.get('/export/:eventId', auth, async (req, res) => {
       .lean();
 
     // Generate Excel file with proper headers
-    const { generateAttendanceExport, generateExportFilename } = require('../utils/csv');
     const excelBuffer = await generateAttendanceExport(participants, event);
     const filename = generateExportFilename(event, 'xlsx');
 
