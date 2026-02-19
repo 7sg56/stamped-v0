@@ -30,7 +30,7 @@ const mockExpress = (() => {
   return express;
 })();
 
-jest.mock('express', () => mockExpress, { virtual: true });
+jest.mock('express', () => mockExpress);
 
 jest.mock('dotenv', () => ({
   config: jest.fn(),
