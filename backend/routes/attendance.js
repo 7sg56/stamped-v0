@@ -182,17 +182,18 @@ router.get('/export/:eventId', auth, async (req, res) => {
       .sort({ createdAt: 1 })
       .lean();
 
-    // Generate Excel file with proper headers
-    const excelBuffer = await generateAttendanceExport(participants, event);
+    // Generate filename for export
     const filename = generateExportFilename(event, 'xlsx');
 
     // Set proper headers for file download
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', excelBuffer.length);
 
-    // Return file as downloadable response
-    res.send(excelBuffer);
+    // Stream Excel file directly to response
+    await generateAttendanceExport(participants, event, res);
+
+    // End response
+    res.end();
 
   } catch (error) {
     console.error('Export attendance error:', error);

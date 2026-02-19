@@ -62,7 +62,7 @@ describe('Attendance Route Export', () => {
     });
 
     // Mock implementations
-    mockGenerateAttendanceExport.mockResolvedValue(Buffer.from('excel data'));
+    mockGenerateAttendanceExport.mockResolvedValue();
     mockGenerateExportFilename.mockReturnValue('filename.xlsx');
 
     // Find the handler
@@ -86,7 +86,8 @@ describe('Attendance Route Export', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
       send: jest.fn(),
-      setHeader: jest.fn()
+      setHeader: jest.fn(),
+      end: jest.fn()
     };
 
     const next = jest.fn();
@@ -100,6 +101,14 @@ describe('Attendance Route Export', () => {
     expect(mockGenerateAttendanceExport).toHaveBeenCalled();
     expect(mockGenerateExportFilename).toHaveBeenCalled();
     expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    expect(res.send).toHaveBeenCalledWith(expect.any(Buffer));
+
+    // Updated verification for streaming
+    expect(mockGenerateAttendanceExport).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.anything(),
+      res
+    );
+    expect(res.send).not.toHaveBeenCalled();
+    expect(res.end).toHaveBeenCalled();
   });
 });
