@@ -111,11 +111,6 @@ if (require.main === module) {
 
     // Start event cleanup task
     startEventCleanupTask();
-
-    // Create superadmin user on startup
-    Admin.createSuperAdmin().catch(err => {
-      console.error('Error creating superadmin user:', err);
-    });
   });
 }
 

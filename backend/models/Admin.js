@@ -117,38 +117,6 @@ adminSchema.methods.toJSON = function() {
   return adminObject;
 };
 
-// Static method to create hardcoded superadmin user from environment variables
-// This is the ONLY way to create superadmin users - no registration allowed
-adminSchema.statics.createSuperAdmin = async function() {
-  const superAdminUsername = process.env.SUPERADMIN_USERNAME;
-  const superAdminPassword = process.env.SUPERADMIN_PASSWORD;
-
-
-  // Only create superadmin if environment variables are set
-  if (!superAdminUsername || !superAdminPassword) {
-    console.log('⚠️  SUPERADMIN_USERNAME and SUPERADMIN_PASSWORD not set in environment variables');
-    return;
-  }
-
-  // Always delete existing superadmin first to ensure clean recreation
-  const deleteResult = await this.deleteOne({ username: superAdminUsername });
-  if (deleteResult.deletedCount > 0) {
-    console.log(`🗑️  Deleted existing superadmin: ${superAdminUsername}`);
-  }
-  
-  // Create fresh superadmin with current environment variables
-  // Hash the password manually since we're setting passwordHash directly
-  const salt = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(superAdminPassword, salt);
-  
-  const admin = new this({
-    username: superAdminUsername,
-    passwordHash: hashedPassword,
-    role: 'superadmin'
-  });
-  await admin.save();
-  console.log(`✅ Created fresh superadmin: ${superAdminUsername}`);
-};
 
 // Index for performance
 adminSchema.index({ username: 1 }, { unique: true });
