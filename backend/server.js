@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const apiRoutes = require("./routes");
 const errorHandler = require("./middleware/errorHandler");
 const { errorLogger, requestLogger, performanceMonitor, requestId } = require("./middleware/requestLogger");
+const { globalLimiter } = require("./middleware/rateLimiter");
 const { startEventCleanupTask } = require("./utils/eventCleanup");
 const Admin = require("./models/Admin");
 
@@ -17,6 +18,7 @@ app.set('trust proxy', 1);
 app.use(requestId);
 app.use(requestLogger);
 app.use(performanceMonitor);
+app.use(globalLimiter);
 
 // CORS configuration: allow specific origins
 const corsOptions = {
