@@ -8,19 +8,38 @@ const ExcelJS = require('exceljs');
  * Generate Excel export for event attendance data
  * @param {Array} participants - Array of participant objects with attendance data
  * @param {Object} event - Event information
- * @returns {Promise<Buffer>} Excel file buffer
+ * @param {Object} [res] - Optional Express response object to stream data to
+ * @returns {Promise<Buffer|void>} Excel file buffer or void if streaming
  */
-async function generateAttendanceExport(participants, event) {
+async function generateAttendanceExport(participants, event, res) {
   try {
     validateInput(participants, event);
 
-    const { workbook, worksheet } = initializeWorkbook();
+    let workbook, worksheet;
+    const isStreaming = !!res;
 
-    addReportHeader(worksheet, event);
-    addDataHeaders(worksheet);
-    addParticipantRows(worksheet, participants, event);
-    addSummarySection(worksheet, participants);
-    applyFinalStyling(worksheet);
+    if (isStreaming) {
+      workbook = new ExcelJS.stream.xlsx.WorkbookWriter({ stream: res });
+      worksheet = workbook.addWorksheet('Attendance Report');
+      worksheet.properties.defaultRowHeight = 20;
+    } else {
+      const init = initializeWorkbook();
+      workbook = init.workbook;
+      worksheet = init.worksheet;
+    }
+
+    addReportHeader(worksheet, event, isStreaming);
+    addDataHeaders(worksheet, isStreaming);
+    addParticipantRows(worksheet, participants, event, isStreaming);
+    addSummarySection(worksheet, participants, isStreaming);
+
+    // Note: applyFinalStyling is removed as styling is now applied row-by-row
+    // to support streaming (committing rows immediately).
+
+    if (isStreaming) {
+      await workbook.commit();
+      return;
+    }
 
     // Generate buffer
     const buffer = await workbook.xlsx.writeBuffer();
@@ -60,19 +79,40 @@ function initializeWorkbook() {
 }
 
 /**
+ * Helper to apply borders to cells A-H in a row
+ * @param {Object} row
+ */
+function applyRowBorders(row) {
+  const startCol = 1; // Column A
+  const endCol = 8;   // Column H
+
+  for (let colNum = startCol; colNum <= endCol; colNum++) {
+    const cell = row.getCell(colNum);
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+  }
+}
+
+/**
  * Add report header with title, event details, and timestamp
  * @param {Object} worksheet
  * @param {Object} event
+ * @param {boolean} isStreaming
  */
-function addReportHeader(worksheet, event) {
-  // Add title and event information
+function addReportHeader(worksheet, event, isStreaming) {
+  // Add title and event information (Row 1)
   worksheet.mergeCells('A1:H1');
   const titleCell = worksheet.getCell('A1');
   titleCell.value = `Attendance Report - ${event.title}`;
   titleCell.font = { size: 16, bold: true };
   titleCell.alignment = { horizontal: 'center' };
+  if (isStreaming) worksheet.getRow(1).commit();
 
-  // Add event details
+  // Add event details (Row 2)
   worksheet.mergeCells('A2:H2');
   const eventDetailsCell = worksheet.getCell('A2');
   const eventDate = event.date ? new Date(event.date).toLocaleDateString('en-US', {
@@ -86,23 +126,27 @@ function addReportHeader(worksheet, event) {
   eventDetailsCell.value = `Event Date: ${eventDate} | Venue: ${event.venue || 'N/A'}`;
   eventDetailsCell.font = { size: 12 };
   eventDetailsCell.alignment = { horizontal: 'center' };
+  if (isStreaming) worksheet.getRow(2).commit();
 
-  // Add generation timestamp
+  // Add generation timestamp (Row 3)
   worksheet.mergeCells('A3:H3');
   const timestampCell = worksheet.getCell('A3');
   timestampCell.value = `Generated on: ${new Date().toLocaleString()}`;
   timestampCell.font = { size: 10, italic: true };
   timestampCell.alignment = { horizontal: 'center' };
+  if (isStreaming) worksheet.getRow(3).commit();
 
-  // Add empty row
-  worksheet.addRow([]);
+  // Add empty row (Row 4)
+  const emptyRow = worksheet.addRow([]);
+  if (isStreaming) emptyRow.commit();
 }
 
 /**
  * Add data headers and set column widths
  * @param {Object} worksheet
+ * @param {boolean} isStreaming
  */
-function addDataHeaders(worksheet) {
+function addDataHeaders(worksheet, isStreaming) {
   // Define column headers
   const headers = [
     'Name',
@@ -115,7 +159,7 @@ function addDataHeaders(worksheet) {
     'Venue'
   ];
 
-  // Add headers row
+  // Add headers row (Row 5)
   const headerRow = worksheet.addRow(headers);
   headerRow.font = { bold: true };
   headerRow.fill = {
@@ -123,6 +167,9 @@ function addDataHeaders(worksheet) {
     pattern: 'solid',
     fgColor: { argb: 'FFE0E0E0' }
   };
+
+  applyRowBorders(headerRow);
+  if (isStreaming) headerRow.commit();
 
   // Set column widths
   worksheet.columns = [
@@ -142,14 +189,17 @@ function addDataHeaders(worksheet) {
  * @param {Object} worksheet
  * @param {Array} participants
  * @param {Object} event
+ * @param {boolean} isStreaming
  */
-function addParticipantRows(worksheet, participants, event) {
+function addParticipantRows(worksheet, participants, event, isStreaming) {
   if (participants.length === 0) {
     // Add a row indicating no participants
     const noDataRow = worksheet.addRow(['No participants registered for this event']);
     worksheet.mergeCells(`A${noDataRow.number}:H${noDataRow.number}`);
     noDataRow.getCell(1).alignment = { horizontal: 'center' };
     noDataRow.getCell(1).font = { italic: true };
+    applyRowBorders(noDataRow);
+    if (isStreaming) noDataRow.commit();
     return;
   }
 
@@ -190,6 +240,9 @@ function addParticipantRows(worksheet, participants, event) {
       };
       attendedCell.font = { color: { argb: 'FF721C24' } }; // Dark red
     }
+
+    applyRowBorders(row);
+    if (isStreaming) row.commit();
   });
 }
 
@@ -197,56 +250,35 @@ function addParticipantRows(worksheet, participants, event) {
  * Add summary section with statistics
  * @param {Object} worksheet
  * @param {Array} participants
+ * @param {boolean} isStreaming
  */
-function addSummarySection(worksheet, participants) {
-  const summaryStartRow = worksheet.rowCount + 2;
-  worksheet.addRow([]);
+function addSummarySection(worksheet, participants, isStreaming) {
+  // Empty row
+  const emptyRow = worksheet.addRow([]);
+  if (isStreaming) emptyRow.commit();
 
   const summaryHeaderRow = worksheet.addRow(['Summary']);
   summaryHeaderRow.getCell(1).font = { size: 14, bold: true };
+  applyRowBorders(summaryHeaderRow);
+  if (isStreaming) summaryHeaderRow.commit();
 
   const totalRegistered = participants.length;
   const totalAttended = participants.filter(p => p.attended).length;
   const attendanceRate = totalRegistered > 0 ? ((totalAttended / totalRegistered) * 100).toFixed(1) : '0.0';
 
-  worksheet.addRow(['Total Registered:', totalRegistered]);
-  worksheet.addRow(['Total Attended:', totalAttended]);
-  worksheet.addRow(['Attendance Rate:', `${attendanceRate}%`]);
+  const summaryRows = [
+      ['Total Registered:', totalRegistered],
+      ['Total Attended:', totalAttended],
+      ['Attendance Rate:', `${attendanceRate}%`]
+  ];
 
-  // Style summary section
-  for (let i = summaryStartRow; i <= worksheet.rowCount; i++) {
-    const row = worksheet.getRow(i);
-    row.getCell(1).font = { bold: true };
-    if (i > summaryStartRow + 1) { // Skip the "Summary" header
+  summaryRows.forEach(data => {
+      const row = worksheet.addRow(data);
+      row.getCell(1).font = { bold: true };
       row.getCell(2).font = { bold: true };
-    }
-  }
-}
-
-/**
- * Apply final styling like borders to all data cells
- * @param {Object} worksheet
- */
-function applyFinalStyling(worksheet) {
-  // Add borders to all data cells
-  // Assuming header starts at row 5 (title=1, details=2, timestamp=3, empty=4, headers=5)
-  const startRow = 5;
-  const endRow = worksheet.rowCount;
-  const startCol = 1; // Column A
-  const endCol = 8; // Column H
-
-  for (let rowNum = startRow; rowNum <= endRow; rowNum++) {
-    const row = worksheet.getRow(rowNum);
-    for (let colNum = startCol; colNum <= endCol; colNum++) {
-      const cell = row.getCell(colNum);
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-    }
-  }
+      applyRowBorders(row);
+      if (isStreaming) row.commit();
+  });
 }
 
 /**
