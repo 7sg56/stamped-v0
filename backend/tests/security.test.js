@@ -116,7 +116,7 @@ jest.mock('../utils/eventCleanup', () => ({
 }));
 
 jest.mock('../models/Admin', () => ({
-  createSuperAdmin: jest.fn().mockResolvedValue(),
+  // createSuperAdmin is no longer mocked as it was removed
 }));
 
 
